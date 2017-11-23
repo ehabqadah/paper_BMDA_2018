@@ -1,2 +1,1 @@
-# paper_BMDA_2018
-The latex source of our paper for  BMDA 2018.
+# A Distributed Online Learning Approach for Pattern Prediction over Movement Event Streams with Apache Flink
