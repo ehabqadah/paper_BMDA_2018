@@ -4,9 +4,9 @@
 %define the pattern we deal formally%
 % include base line 1 batch size in experemintal results%
 
-We follow the terminology of \cite{luckham2008power,alevizos2015complex,zhou2015pattern} to formalize the problem we tackle. Given a set of $K$ real-time streams of events $S = \{ s_1,s_2, ..., s_k\}$ as input, which are associated with a set of $K$  objects $O = \{ o_1, ..., o_k\}$. Where each stream $s_i=\langle e_1,e_3...,e_t,...\rangle$  is a time-ordered sequence of events, these events are connected to a single reference object $o_i \in O$,  $e_t$  refers to the current time event within the unbounded stream, we give the definition of the input event sample as follows:  
+We follow the terminology of \cite{luckham2008power,alevizos2015complex,zhou2015pattern} to formalize the problem we tackle. Given a set of \emph{$K$} real-time streams of events $S = \{ s_1,s_2, ..., s_k\}$ as input, which are associated with a set of $K$  objects $O = \{ o_1, ..., o_k\}$. Where each stream $s_i=\langle e_1,e_3,...,e_t,...\rangle$  is a time-ordered sequence of events, these events are connected to a moving object  $o_i \in O$,  $e_t$  refers to the current time event within the unbounded stream, we give the definition of the input event sample as follows:  
 \begin{definition}
-	Each event is defined as a tuple of attributes $e_i = (type,\tau,a_1,a_2.....,a_n,id)$:  where $type$ is the event type attribute that takes a value from a set of finite event types/symbols $\Sigma$, $\tau$ represents the timestamp of the event tuple,  the  $a_1,a_2,...,a_n$ are spatial or other contextual features (e.g., speed), these features are varying from one application domain to another, while the $id$ attribute connects the event tuple to an associated domain object.
+	Each event is defined as a tuple of attributes $$e_i = (type,\tau,a_1,a_2.....,a_n,id)$$ Where $type$ is the event type attribute that takes a value from a set of finite event types/symbols $\Sigma$, $\tau$ represents the timestamp of the event tuple,  the  $a_1,a_2,...,a_n$ are spatial or other contextual features (e.g., speed); these features are varying from one application domain to another, while the $id$ attribute connects the event tuple to an associated moving object.
 \end{definition}
 
 A user-defined pattern $\mathcal{P}$ is given in the form of regular expression over $\Sigma$ (i.e., event types) \cite{alevizos2017event}, and the main goal is to predict the full matches of $\mathcal{P}$ within each event stream $s_i\in S$ in real-time.
@@ -32,12 +32,22 @@ The defined pattern $\mathcal{P}$ is monitored over each event stream $s_i$  by 
 
 
 \subsection{Distributed architecture}
-In Figure ~\ref{fig:architecture} the architecture and components of our  system are given.
+
+Figure ~\ref{fig:architecture} presents the overview of our system architecture and its main components. It consumes an aggregated input events stream \footnote{In practical, this aggregated input events stream is composed of multiple input event streams for multiple moving objects.} of large number of moving objects, which are continuously collected and fed into the system. Our system processes theses events, and produces an output events stream enriched with predictions about a  pattern $\mathcal{P}$ by the domain expert. 
+
 
 \begin{figure}[h]
 
-\includegraphics[height=2.5in, width=3.9in]{figures/distributed_architecture.png}
+\includegraphics[height=2.5in, width=3.4in]{figures/distributed_architecture.png}
 	
 \caption{System Architecture.}
 \label{fig:architecture}
 \end{figure}
+
+The system is composed of three processing units:   \begin{enumerate*}[(i)]
+	\item pre-processing operators that receive the input event stream, and perform filtration, ordering operations, before partitioned the input event stream to multiple event streams based on the associated moving object 
+	\item predictor nodes (learners), which are responsible to maintain a prediction model for the input event streams, such that each prediction node is configured to handle an event stream from the same moving object, in order to provide online predictions for a predefined pattern $\mathcal{P}$  
+	\item a coordinator node that communicates through a Kafka stream channels with the predictors to realize the distributed online learning protocol, which builds a global prediction model based on the received local models, and then share it among the predictors.
+\end{enumerate*}
+
+In summary, our distributed system consists of multiple pre-processing operators, prediction nodes,  and a central coordinator node. All units are running concurrently and arranged as data processing pipeline as depicted in Figure ~\ref{fig:architecture}.
