@@ -2,22 +2,22 @@
 
 Distributed online prediction by mini-batch based approach has been proposed in \cite{dekel2012optimal}. Their approach is based on a static synchronization method,  the learners periodically communicate  their local models with a central coordinator unit after consuming a fixed number of input samples/events, in order to  create a global model and share it between all learners. This work has been extended in \cite{kamp2014communication} by introducing a
 dynamic synchronization scheme that reduces the required communication by monitoring the variance of the local models from a global reference point. In this paper, we address to use the communication-efficient distributed online learning protocol for event patterns prediction, which is internally based on the Pattern Markov Chain (PMC) predictors. The following section gives a detailed description of the synchronization protocol.
-\subsubsection*{Communication-efficient distributed online prediction by dynamic model synchronization:}
+\subsubsection*{Communication-efficient distributed online prediction by dynamic model synchronization:\\}
 
-Algorithm~\ref{algonline:dol} presents the distributed prediction using the communication-efficient distributed online protocol on both the predictor and coordinator nodes. When a predictor $f\in[k]$ observes an event $e_i$ before synchronization phase $t$, it revises its internal state . Note that $m_t$ is the aggregated model received from the coordinator at synchronization phase $t$ and $m_{t+i}$ is the updated local model after observing the $i^{th}$ event in the new batch.
+Algorithm~\ref{algonline:dol} presents the distributed online prediction protocol on both the predictor and coordinator nodes. When a predictor $n_j$ observes an event $e_i$ it revises its internal state and provide a prediction. Then it checks the local conditions (batch size b and local model diverges from the reference point) to synchronize its local model with coordinator. At the coordinator after receiving the local models, an aggregated model $\hat{f}$ is computed and sent back to the predictors to updated their local model.
 
 \begin{algorithm}
 	\caption{communication-efficient distributed online prediction protocol} 
 	\begin{algorithmic}[1] 
-		\Statex  {Predictor $f$:} at observing event $e_i$
-		\Statex \Indp update model $m_{t+i,f}$ and predict $I$
+		\Statex  {Predictor $n_j$:} at observing event $e_i$
+		\Statex \Indp update prediction model $f_{j}$ and predict $I$
 
-		\Statex \If {$i\mod b = 0\ and \|m_i - r\|^2 > \bigtriangleup$}  
-		\Statex send $m_{t+i,f}$ to Coordinator 
+		\Statex \If {$i\mod b = 0\ and\ \|f_j - r\|^2 > \bigtriangleup$}  
+		\Statex send  $f_{j}$ to the Coordinator 
 		\Statex \Indm \Indm \textbf{Coordinator} at synchronization:
-		\Statex \Indp Receive local models $\{m_{t,f}\}_{f=1}^k$ 	
-		\Statex  compute the global model $m$ 
-		\Statex send m to all the predictors $[k]$ and set $m_{f,1}\dots, m_{f,k}=m$
+		\Statex \Indp Receive local models $\{f_{j}\}_{j=1}^k$ 	
+		\Statex  compute the global model $\hat{f}$ 
+		\Statex send $\hat{f}$ to all the predictors $[k]$ and set $f_{1}\dots, f_{k}=\hat{f}$
 	\end{algorithmic}
 	\label{algonline:dol}
 \end{algorithm}
