@@ -1,5 +1,5 @@
 \section{SYSTEM OVERVIEW}
-\subsection{Problem formulation}
+\subsection{Problem Formulation}
 %refine the stream and event pattern %
 %define the pattern we deal formally%
 % include base line 1 batch size in experemintal results%
@@ -31,9 +31,9 @@ The defined pattern $\mathcal{P}$ is monitored over each event stream $s_i$  by 
 \par Our proposed approach is imposing a speed up in the learning of the prediction models with less training data, in addition, we expect to gain an improvement of the predictive performance compared to the no-distributed  version of event forecasting with Pattern Markov Chains system. 
 
 
-\subsection{Distributed architecture}
-
-Figure ~\ref{fig:architecture} presents the overview of our system architecture and its main components. It consumes an aggregated input events stream \footnote{In practical, this aggregated input events stream is composed of multiple input event streams for multiple moving objects.} of large number of moving objects, which are continuously collected and fed into the system. Our system processes theses events, and produces an output events stream enriched with predictions about a  pattern $\mathcal{P}$ by the domain expert. 
+\subsection{Distributed Architecture}
+\label{sec:architecture}
+Our system consumes an aggregated events stream as input\footnote{In practical, the aggregated input events stream is composed of multiple input event streams for multiple moving objects, which are reconstructed bt the system internally.} of large number of moving objects, which is continuously collected and fed into the system. It allows users to register a pattern $\mathcal{P}$ to be monitored over each event stream of a moving object. Output stream consists of original input events alongside with predictions of full matches of $\mathcal{P}$ is outputted to be displayed to the end users. Figure ~\ref{fig:architecture} presents the overview of our system architecture and its main components. 
 
 
 \begin{figure}[h]

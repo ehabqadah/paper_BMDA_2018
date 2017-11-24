@@ -1,4 +1,4 @@
-\subsection{Technological background}
+\subsection{Technological Background}
 In the last years, many systems for large-scale and distributed stream processing have been proposed, including Spark Streaming \cite{Spark},  Apache Storm \cite{Storm} and Apache Flink \cite{Flink}. These framework allow to ingest real-time data streams from different sources such as  Aws Kinesis \cite{Kinesis} and Apache Kafka \cite{Kafka}. We implemented the proposed system over Apache Flink which provides the distributed stream processing components of the distributed predictors, alongside  Apache kafka for streaming the input event streams, and as a messaging platform to enable the distributed online learning functionalities.
 
 
@@ -8,16 +8,16 @@ the local models for each incoming data streams and there is a Bolt representing
 the local models. As the synchronization protocol includes the steps of sending the local models to the coordinator (for merging the models) and of sending
 the merged model back, it results in a cyclic workflow structure, which is supported in Storm. 
 
-\subsubsection*{Apache Flink:}
+\subsubsection*{Apache Flink:\\}
 
-Apache Flink is an open source project that provides a large-scale, distributed and stateful stream processing platform \cite{carbone2015apache}. Flink is one of the recent and common big data processing frameworks, it employees data-stream processing model for streaming and batch data, the batch processing is treated as a special case of streaming applications (i.e., finite stream). The Flink's software stack includes the  $DataStream$ and $DataSet$ APIs for processing infinite and finite data, respectively. These two core APIs built on the top of the Flink's core distributed streaming dataflow engine. Additionally, Flink provides libraries such as Complex event processing for Flink (Flink-CEP), Machine Learning for Flink (FlinkML) and Flink Graph API (Gelly) \cite{carbone2015apache}.
+\par Apache Flink is an open source project that provides a large-scale, distributed and stateful stream processing platform \cite{carbone2015apache}. Flink is one of the recent and common big data processing frameworks, it employees data-stream processing model for streaming and batch data, the batch processing is treated as a special case of streaming applications (i.e., finite stream). The Flink's software stack includes the  $DataStream$ and $DataSet$ APIs for processing infinite and finite data, respectively. These two core APIs built on the top of the Flink's core distributed streaming dataflow engine. Additionally, Flink provides libraries such as Complex event processing for Flink (Flink-CEP), Machine Learning for Flink (FlinkML) and Flink Graph API (Gelly) \cite{carbone2015apache}.
 
 \par The main data abstractions of Flink are $DataStream$ and $DataSet$ that represent read-only collection of data elements. The list of elements is bounded (i.e., finite) in $DataSet$, while it is unbounded (i.e., infinite) in the case of $DataStream$. The Flink's core is a distributed streaming dataflow engine, with each
 Flink program is represented by a data-flow graph (i.e., directed acyclic graph - DAG) that executed by the Flink's engine \cite{carbone2015apache}. The data flow graphs are composed of stateful (state is maintained per partition), parallel operations and intermediate data stream partitions.
 
-\subsubsection*{Apache Kafka:}
+\subsubsection*{Apache Kafka:\\}
 
-Apache Kafka is scalable, fault-tolerant and distributed streaming framework \cite{Kafka}. It allows to publish and subscribe to arbitrary data streams. Kafka manages the stream records in different categories (i.e., topics) that are partitioned and distributed over the Kafka servers. It provides the ability to publish a stream of records to one or more Kafka topic, to be consumed by applications that can subscribe to one or more topic to read data streams. The stream is distribute and balance between receivers within the same group for the sake of scalability.
+\par Apache Kafka is scalable, fault-tolerant and distributed streaming framework \cite{Kafka}. It allows to publish and subscribe to arbitrary data streams. Kafka manages the stream records in different categories (i.e., topics) that are partitioned and distributed over the Kafka servers. It provides the ability to publish a stream of records to one or more Kafka topic, to be consumed by applications that can subscribe to one or more topic to read data streams. The stream is distribute and balance between receivers within the same group for the sake of scalability.
   
 
 

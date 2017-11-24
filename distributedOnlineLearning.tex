@@ -1,4 +1,4 @@
-\subsection{Distributed online learning}
+\subsection{Distributed Online Learning}
 
 Distributed online prediction by mini-batch based approach has been proposed in \cite{dekel2012optimal}. Their approach is based on a static synchronization method,  the learners periodically communicate  their local models with a central coordinator unit after consuming a fixed number of input samples/events, in order to  create a global model and share it between all learners. This work has been extended in \cite{kamp2014communication} by introducing a
 dynamic synchronization scheme that reduces the required communication by monitoring the variance of the local models from a global reference point. In this paper, we address to use the communication-efficient distributed online learning protocol for event patterns prediction, which is internally based on the Pattern Markov Chain (PMC) predictors. The following section gives a detailed description of the synchronization protocol.
