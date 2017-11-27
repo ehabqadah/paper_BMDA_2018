@@ -1,12 +1,33 @@
+
+
 \section{IMPLEMENTATION DETAILS}
 
-Our system has been implemented on top of Apache Flink and Apcache Kafka frameworks. Each of the three sub-modules described in Section  ~\ref{sec:architecture} have been implemented as Flink Job or operation. Algorithm ~\ref{algonline:flink1} shows how the system's workflow  is implemented as pipeline in Flink.
+Our system has been implemented on top of Apache Flink and Apcache Kafka frameworks. Each of the three sub-modules described in Section  ~\ref{sec:architecture} have been implemented as Flink Job or operation. Algorithm ~\ref{algonline:flink1} shows how the workflow of the local predictors is implemented as pipeline in Flink.
 
 \begin{algorithm}
-	\caption{Flink pipeline for system workflow} 
+	\caption{Flink pipeline for local predictors workflow} 
 	\begin{algorithmic}[1] 
-		\Statex  
-		
+		\Statex 
+	\begin{lstlisting}
+	DataStream<Event> eventsStream = .....;	
+	// Assign time stamp for input events 
+	DataStream<Tuple2<String, SynopsesEvent>> eventsStream =
+	.assignTimestampsAndWatermarks(new EventTimeAssigner());	
+	// Create the keyed stream of the (id,event) tuples stream
+	KeyedStream<Tuple2<String, Event>, Tuple> keyedEventsStream =
+	eventsStream.keyBy(0).process(new EventSorter())
+	.keyBy(0);	
+	//Initialize the predictor node 
+	LocalPredictorNode predictorNode =new LocalPredictorNode<Event>(
+	getInitializedDFAForPattren(P), horizon,
+	predictionThreshold, maxSpread);
+	// Process the kay event stream by the predictor map function 
+	DataStream<Event> processedEventsStream =
+	keyedEventsStream.map(predictorNode);
+	\end{lstlisting}
 	\end{algorithmic}
 	\label{algonline:flink1}
 \end{algorithm}
+
+
+The system ingests the input event stream form a Kafka stream, which is mapped to \textbf{DataStream} of events, which is then process by \textbf{TimestampAssigner} to assign the timestamps of the input event based on their creation timestamp to be sued by the process function \textbf{EventSorter} that manges the events out of order. Then order stream is transformed to \textbf{keyedEventsStream}  based on grouping the event tuples  on their ids. A local predictor in a distributed environment is represented by a \textbf{map} function over the \textbf{keyedEventsStream}. Its implementation maintain a statfull learning model (i.e., pattern markov chain predictor) per each event key that consumes the events and  provides a prediction about the user-defined pattern $P$.        
