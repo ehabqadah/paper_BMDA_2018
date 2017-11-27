@@ -1,26 +1,42 @@
+
 \subsection{Distributed Online Learning}
+In recent years, the problem of distributed online learning has received significant attention and have been studied in \cite{langford2009slow,yan2013distributed,xiao2010dual,dekel2012optimal,kamp2014communication}.  A distributed online mini-batch prediction approach over multiple data streams has been proposed in \cite{dekel2012optimal}. Their approach is based on a static synchronization method,  the learners periodically communicate  their local models with a central coordinator unit after consuming a fixed number of input samples/events (i.e., batch size $b$), in order to  create a global model and share it between all learners. This work has been extended in \cite{kamp2014communication} by introducing a
+dynamic synchronization scheme that reduces the required communication by making the local learners communicate their models only if they diverge form a reference point. The following section gives a detailed description of this dynamic synchronization protocol.
+\subsubsection*{Communication-efficient distributed online prediction\\ by dynamic model synchronization:\\}
 
-Distributed online prediction by mini-batch based approach has been proposed in \cite{dekel2012optimal}. Their approach is based on a static synchronization method,  the learners periodically communicate  their local models with a central coordinator unit after consuming a fixed number of input samples/events, in order to  create a global model and share it between all learners. This work has been extended in \cite{kamp2014communication} by introducing a
-dynamic synchronization scheme that reduces the required communication by monitoring the variance of the local models from a global reference point. In this paper, we address to use the communication-efficient distributed online learning protocol for event patterns prediction, which is internally based on the Pattern Markov Chain (PMC) predictors. The following section gives a detailed description of the synchronization protocol.
-\subsubsection*{Communication-efficient distributed online prediction by dynamic model synchronization:\\}
+\par Algorithm~\ref{algonline:dol} presents the distributed online prediction protocol by dynamic model synchronization on both the predictor nodes and the coordinator. When a predictor $n_j:\ j \in[k]$ observes an event $e_i$ it revises its internal model state and provides a prediction. Then it checks the local conditions  (batch size $b$ and local model divergence from a reference vector $r$) to decide if there is a need to synchronize its local model with the coordinator or not. The typical choice of $r$ is the last computed aggregated model from the previous synchronization step, which is shared between all local predictors/learners. By monitoring the local condition $\|f_j - r\|^2 > \Delta$ on all local predictors, we have a guarantee that if none of the local conditions is violated, the divergence (i.e., variance of local models $\delta(f)=\frac{1}{k} \sum_{j=1}^{k}\|f_j - \hat{f}\|^2$) does not exceed the threshold $\Delta$ \cite{kamp2014communication}. 
 
-Algorithm~\ref{algonline:dol} presents the distributed online prediction protocol on both the predictor and coordinator nodes. When a predictor $n_j$ observes an event $e_i$ it revises its internal state and provide a prediction. Then it checks the local conditions (batch size b and local model diverges from the reference point) to synchronize its local model with coordinator. At the coordinator after receiving the local models, an aggregated model $\hat{f}$ is computed and sent back to the predictors to updated their local model.
+
+
+\par On the other hand, the coordinator receives the models from nodes with the violation, then it tries to query other nodes for their local models until receiving from all nodes or the variance of the already received models less or equal than the divergence threshold  $\Delta$. Finally, an aggregated model $\hat{f}$ is computed and sent back to the predictor nodes that sent their models after violation or have been queried by the coordinator.
 
 \begin{algorithm}
-	\caption{communication-efficient distributed online prediction protocol} 
+	\caption{Communication-efficient Distributed Online Learning Protocol } 
 	\begin{algorithmic}[1] 
-		\Statex  {Predictor $n_j$:} at observing event $e_i$
-		\Statex \Indp update prediction model $f_{j}$ and predict $I$
+		\Statex  \Indm  \textbf{Predictor} node $n_j$: at observing event $e_i$
+		\Statex \Indp update prediction model $f_{j}$ and provide a prediction service 
 
-		\Statex \If {$i\mod b = 0\ and\ \|f_j - r\|^2 > \bigtriangleup$}  
-		\Statex send  $f_{j}$ to the Coordinator 
-		\Statex \Indm \Indm \textbf{Coordinator} at synchronization:
-		\Statex \Indp Receive local models $\{f_{j}\}_{j=1}^k$ 	
-		\Statex  compute the global model $\hat{f}$ 
-		\Statex send $\hat{f}$ to all the predictors $[k]$ and set $f_{1}\dots, f_{k}=\hat{f}$
+		\Statex \If {$i\mod b = 0\ and\ \|f_j - r\|^2 > \Delta$}  
+		\Statex send  $f_{j}$ to the Coordinator (violation) 
+		\Statex \Indm \textbf{Coordinator}:
+		\Statex \Indp receive local models with violation
+		 $\Pi=\{f_{j}\}_{j=1}^m$
+	
+	
+		\Statex \While{$|\Pi| \neq k $ and $\frac{1}{|\Pi|} \ \sum_{f_j\in  \Pi}\|f_j - \hat{f}\|^2 > \Delta$}{
+			
+			 \Statex  add other nodes have not reported violation for their models $ \Pi \gets \{f_l : f_l \notin \Pi\ and\ l \in [k]\}$   
+			\Statex  recieve models from nodes add to $\Pi$
+	}
+        \Statex
+		\Statex compute a new global model $\hat{f}$ 
+		\Statex send $\hat{f}$ to all the predictor nodes in $\Pi$ and set $f_{1}\dots, f_{m}=\hat{f} $ 
+		\Statex \If {$|\Pi| = k$}{
+		\Statex set a new reference vector $r	\gets \hat{f}$ }
 	\end{algorithmic}
 	\label{algonline:dol}
 \end{algorithm}
 
 
-Moreover, the communication-efficient distributed online learning framework has been extended to handle kernelized online learning models \cite{kamp2016communication}.
+This protocol was introduced for linear models, and has been  extended to handle kernelized online learning models \cite{kamp2016communication}. In this paper, we address to employee this protocol for the online event patterns prediction model (see Section \ref{sec:proposed_approach}), which is internally based on the Pattern Markov Chain (PMC) predictors. This adaption allows the distributed PMC predictors on multiple event streams to  synchronize their models within the system in a communication-efficient manner. 
+
