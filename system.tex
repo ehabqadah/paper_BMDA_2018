@@ -34,12 +34,12 @@ The defined pattern $\mathcal{P}$ is monitored over each event stream $s_i$  by 
 
 \subsection{Distributed Architecture}
 \label{sec:architecture}
-Our system consumes an aggregated events stream as input\footnote{In practical, the aggregated input events stream is composed of multiple input event streams for multiple moving objects, which are reconstructed bt the system internally.} of large number of moving objects, which is continuously collected and fed into the system. It allows users to register a pattern $\mathcal{P}$ to be monitored over each event stream of a moving object. Output stream consists of original input events alongside with predictions of full matches of $\mathcal{P}$ is outputted to be displayed to the end users. Figure ~\ref{fig:architecture} presents the overview of our system architecture and its main components.      
+Our system consumes an aggregated events stream as input\footnote{In practice, the aggregated input events stream is composed of multiple input event streams for multiple moving objects, which are reconstructed bt the system internally.} of large number of moving objects, which is continuously collected and fed into the system. It allows users to register a pattern $\mathcal{P}$ to be monitored over each event stream of a moving object. Output stream consists of original input events alongside with predictions of full matches of $\mathcal{P}$ is outputted to be displayed to the end users. Figure ~\ref{fig:architecture} presents the overview of our system architecture and its main components.      
 
 
 \begin{figure}[h]
 
-\includegraphics[height=2.5in, width=3.4in]{figures/distributed_architecture.png}
+\includegraphics[height=2.5in, width=\linewidth]{figures/distributed_architecture.png}
 	
 \caption{System Architecture.}
 \label{fig:architecture}
@@ -51,4 +51,4 @@ The system is composed of three processing units:   \begin{enumerate*}[(i)]
 	\item a coordinator node that communicates through a Kafka stream channels with the predictors to realize the distributed online learning protocol, which builds a global prediction model based on the received local models, and then share it among the predictors.
 \end{enumerate*}
 
-\par In summary, our distributed system consists of multiple pre-processing operators, prediction nodes,  and a central coordinator node. All units are running concurrently and arranged as data processing pipeline as depicted in Figure ~\ref{fig:architecture}. We leverage the Apache Kafka as messaging system to ingest the input event streams and to publish the result streams, in addition, it used as the communication channel between the predictor nodes and the coordinator. While Apache Flink is employed to execute the system's distributed processing units over the input event streams. 
+\par In summary, our distributed system consists of multiple pre-processing operators, prediction nodes,  and a central coordinator node. All units are running concurrently and arranged as data processing pipeline as depicted in Figure ~\ref{fig:architecture}. We leverage the Apache Kafka as messaging system to ingest the input event streams and to publish the result streams, in addition, it used as the communication channel between the predictor nodes and the coordinator. While Apache Flink is employed to execute the system's distributed processing units over the input event streams. Our system architecture can be modeled as logical network of processing nodes  organized in a Directed Acyclic Graph (DAG), which is inspired by the Flink runtime dataflow programs \cite{carbone2015apache}.  

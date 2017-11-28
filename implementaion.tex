@@ -2,32 +2,76 @@
 
 \section{IMPLEMENTATION DETAILS}
 
-Our system has been implemented on top of Apache Flink and Apcache Kafka frameworks. Each of the three sub-modules described in Section  ~\ref{sec:architecture} have been implemented as Flink Job or operation. Algorithm ~\ref{algonline:flink1} shows how the workflow of the local predictors is implemented as pipeline in Flink.
+Our system has been implemented on top of Apache Flink and Apache Kafka frameworks. Each of the three sub-modules described in Section  ~\ref{sec:architecture} have been implemented as Flink operations over the input events stream. 
 
-\begin{algorithm}
-	\caption{Flink pipeline for local predictors workflow} 
-	\begin{algorithmic}[1] 
-		\Statex 
-	\begin{lstlisting}
-	DataStream<Event> eventsStream = .....;	
-	// Assign time stamp for input events 
-	DataStream<Tuple2<String, SynopsesEvent>> eventsStream =
+\textbf{Pre-processing and Prediction Operators.} Listing ~\ref{algonline:flink1} shows how the workflow of the system is implemented as pipeline in Flink program.
+
+
+	\begin{lstlisting}[caption={Flink pipeline for local predictors workflow},label={algonline:flink1},frame=single]
+	.....
+	DataStream<Event> inputEventsStream = env.addSource(flinkKafkaConsumer);	
+	// Create event tuples (id,event) and assign time stamp 
+	DataStream<Tuple2<String, sEvent>> eventTuplesStream =
+	inputEventsStream.map(new EventTuplesMapper())
 	.assignTimestampsAndWatermarks(new EventTimeAssigner());	
-	// Create the keyed stream of the (id,event) tuples stream
+	// Create the ordered keyed stream 
 	KeyedStream<Tuple2<String, Event>, Tuple> keyedEventsStream =
 	eventsStream.keyBy(0).process(new EventSorter())
 	.keyBy(0);	
 	//Initialize the predictor node 
-	LocalPredictorNode predictorNode =new LocalPredictorNode<Event>(
-	getInitializedDFAForPattren(P), horizon,
-	predictionThreshold, maxSpread);
-	// Process the kay event stream by the predictor map function 
+	LocalPredictorNode predictorNode =new LocalPredictorNode<Event>(P);
+	// Process the  keyedEventsStream by the predictor 
 	DataStream<Event> processedEventsStream =
 	keyedEventsStream.map(predictorNode);
+	...
 	\end{lstlisting}
-	\end{algorithmic}
-	\label{algonline:flink1}
-\end{algorithm}
+	
+The system ingests the input event stream form a Kafka stream that mapped to \textbf{DataStream} of events, which is then processed by \textbf{EventTuplesMapper} and  \textbf{TimestampAssigner} to create tuples of (id,event) and assign the timestamps of the input event based on their creation timestamp, to be used by the process function \textbf{EventSorter} that manages the events out of order.The ordered stream is transformed to \textbf{keyedEventsStream}  based on grouping the event tuples on their ids (i.e., id of the moving object). A local \textbf{predictor} node in a distributed environment is represented by a \textbf{map} function over the \textbf{keyedEventsStream} that partitioned by key (i.e., a statfull  map operator for each id), its implementation maintain a statfull prediction model (i.e., pattern markov chain predictor)  that consumes the events and  provides a prediction about the user-defined pattern $P$. The output streams (one stream per moving object) of the predictor map function are sent to a new Kafka stream (i.e., same topic name) that can be processed by other components like visualization or users notifier.
 
 
-The system ingests the input event stream form a Kafka stream, which is mapped to \textbf{DataStream} of events, which is then process by \textbf{TimestampAssigner} to assign the timestamps of the input event based on their creation timestamp to be sued by the process function \textbf{EventSorter} that manges the events out of order. Then order stream is transformed to \textbf{keyedEventsStream}  based on grouping the event tuples  on their ids. A local predictor in a distributed environment is represented by a \textbf{map} function over the \textbf{keyedEventsStream}. Its implementation maintain a statfull learning model (i.e., pattern markov chain predictor) per each event key that consumes the events and  provides a prediction about the user-defined pattern $P$.        
+\par Moreover, the implementation of  a \textbf{predictor} map function includes the communication  with \textbf{coordinator} using Kafka streams. At the beginning of the execution it sends a reregistration request to the coordinator. And at runtime it sends  local prediction model as synchronization request,  or  a response for a resolution request from the coordinator. In addition, it receives a resolution request from the coordinator to send its model. These communication messages are published onto different  Kafka topics as depicted in Table~\ref{tab:messagesToTopics}. 
+
+\begin{table}[h]
+	\caption{Message to Kafka topics mapping.}
+	\label{tab:messagesToTopics}
+	\begin{tabular}{p{3cm}l}
+		\toprule
+		Message &Kafka Topic\\
+		\midrule
+		\parbox[t]{4cm}{\textbf{RegisterNode}, \\ \textbf{RequestSync} and \\\textbf{ResolutionAnswer} } &LocalToCoordinatorTopicId\\ \\
+		
+			  \parbox[t]{4cm}{\textbf{CoordinatorSync} and \\ \textbf{RequestResolution}} &CoordinatorToLocalTopicId\\
+		
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
+\textbf{Coordinator.} Listing ~\ref{algonline:flink2} shows how the workflow of coordinator node that manages the distributed online learning protocol operations, which is implemented as Flink program. The coordinator receives messages from the local predictors through a Kafka Stream of a topic named \textbf{"LocalToCoordinatorTopicId"}, it is implemented as a single \textbf{map} function over the messages stream by setting the \textbf{parallelism} level of the Flink program to \textbf{"1"} \footnote{Increasing the parallelism will scale up the number of parallel coordinator instances, but for the current setting a single node in needed.}. The coordinator map operator handles three type of messages from the predictors: \begin{enumerate*}[(i)]
+	\item \textbf{RegisterNode} that contains  a registration request for a new predictor instance,
+	\item \textbf{RequestSync} to receive a local model of a predictor node after violation,
+	\item \textbf{ResolutionAnswer} to receive a resolution response from  a local predictor node.  
+\end{enumerate*}  
+ While it sends \textbf{CoordinatorSync} messages for all predictors after creating a new global prediction model, or \textbf{RequestResolution} to a ask the local predictors for their prediction models.
+ 
+
+\begin{lstlisting}[caption={The coordinator Flink program.},label={algonline:flink2},frame=single]
+...
+	StreamExecutionEnvironment env = .......;
+	env.setParallelism(1);
+ 
+	// Read messages from local predictors
+	DataStream<TopicMessage> messagesStream = readKafkaStream(env, "LocalToCoordinatorTopicId");
+	
+	// Initialize the coordinator node
+	CompunctionEfficientCoordinator coordinatorNode = new CompunctionEfficientCoordinator(configs);
+	
+	DataStream<CoordinatorMessage> coordinatorMessagesStream = messageStream.map(coordinatorNode);
+	
+	// Send the messages form the coordinator to the local predictors
+	writeKafkaStream(coordinatorMessagesStream, CoordinatorToLocalTopicId);
+
+...
+\end{lstlisting}
+
+                 
