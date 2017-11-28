@@ -18,9 +18,9 @@ The defined pattern $\mathcal{P}$ is monitored over each event stream $s_i$  by 
 
 \subsection{The Proposed Approach}
 \label{sec:proposed_approach}
-\par We design and develop a scalable and distributed patterns prediction system over massive input event streams of moving objects. We  exploit the event forecasting with Pattern Markov Chains \cite{alevizos2017event} as the base prediction model (i.e., $f_i$).Moreover,  we propose to enable the information exchange between the distributed predictors/learners of the input event streams, by adapting the distributed online predication protocol \cite{dekel2012optimal,kamp2014communication} to synchronize the prediction models, i.e., Markov transitions probabilities of the Pattern Markov Chain (PMC) predictors.
+\par We design and develop a scalable and distributed patterns prediction system over massive input event streams of moving objects. We  exploit the event forecasting with Pattern Markov Chains \cite{alevizos2017event} as the base prediction model (i.e., $f_i$). Moreover,  we propose to enable the information exchange between the distributed predictors/learners of the input event streams, by adapting the distributed online predication protocol \cite{dekel2012optimal,kamp2014communication} to synchronize the prediction models, i.e., Markov transitions probabilities of the Pattern Markov Chain (PMC) predictors.
 
-\par We propose a $synchronization operation$  for the distributed Pattern Markov Chain (PMC) models based on the maximum-likelihood estimation \citep{anderson1957statistical} for the transition probabilities matrix of the underlaying Markov Chain described by: 
+\par We propose a $synchronization operation$  for the distributed Pattern Markov Chain (PMC) models based on the maximum-likelihood estimation \citep{anderson1957statistical} for the transition probabilities matrix of the underlying Markov Chain described by: 
 \begin{equation}
 \label{eq:pi_estim}
 \hat{p}_{i,j}=\frac{\sum_{k \in K} n_{k,i,j}}{\sum_{k \in K} \sum_{l \in L} n_{k,i,l}}

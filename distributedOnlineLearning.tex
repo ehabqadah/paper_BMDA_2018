@@ -8,7 +8,7 @@ dynamic synchronization scheme that reduces the required communication by making
 
 
 
-\par On the other hand, the coordinator receives the models from nodes with the violation, then it tries to query other nodes for their local models until receiving from all nodes or the variance of the already received models less or equal than the divergence threshold  $\Delta$. Finally, an aggregated model $\hat{f}$ is computed and sent back to the predictor nodes that sent their models after violation or have been queried by the coordinator.
+\par On the other hand, the coordinator receives the models from nodes with the violation, then tries to query other nodes for their local models until receiving from all nodes or the variance of the already received models less or equal than the divergence threshold  $\Delta$. Finally, an aggregated model $\hat{f}$ is computed and sent back to the predictor nodes that sent their models after violation or have been queried by the coordinator.
 
 \begin{algorithm}
 	\caption{Communication-efficient Distributed Online Learning Protocol } 
