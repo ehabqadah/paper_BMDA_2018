@@ -7,7 +7,7 @@
 
 We follow the terminology of \cite{luckham2008power,alevizos2015complex,zhou2015pattern} to formalize the problem we tackle. Given a set of \emph{$K$} real-time streams of events $S = \{ s_1,s_2, ..., s_k\}$ as input, which are associated with a set of \emph{$K$}  objects (i.e., moving objects) $O = \{ o_1, ..., o_k\}$. Where each stream $s_i=\langle e_1,e_3,...,e_t,...\rangle$  is a time-ordered sequence of events, these events are connected to a moving object  $o_i \in O$,  $e_t$  refers to the current time event within the unbounded stream, we give the definition of the input event sample as follows:  
 \begin{definition}
-	Each event is defined as a tuple of attributes $$e_i = (id,type,\tau,a_1,a_2.....,a_n)$$ Where $type$ is the event type attribute that takes a value from a set of finite event types/symbols $\Sigma$, $\tau$ represents the timestamp of the event tuple,  the  $a_1,a_2,...,a_n$ are spatial or other contextual features (e.g., speed); these features are varying from one application domain to another, while the $id$ attribute connects the event tuple to an associated object.
+	Each event is defined as a tuple of attributes $$e_i = (id,type,\tau,a_1,a_2.....,a_n)$$ Where $type$ is the event type attribute that takes a value from a set of finite event types/symbols $\Sigma$, $\tau$ represents the time when the event tuple was created,  the  $a_1,a_2,...,a_n$ are spatial or other contextual features (e.g., speed); these features are varying from one application domain to another, while the $id$ attribute connects the event tuple to an associated object.
 \end{definition}
 
 \par A user-defined pattern $\mathcal{P}$ is given in the form of a regular expression (i.e., using operators for \textit{sequence}, \textit{disjunction} and \textit{iteration}) over $\Sigma$ (i.e., event types) \cite{alevizos2017event}, and the main goal is to predict the full matches of $\mathcal{P}$ within each event stream $s_i\in S$ in real-time.
@@ -36,7 +36,7 @@ The defined pattern $\mathcal{P}$ is monitored over each event stream $s_i$  by 
 
 \subsection{Distributed Architecture}
 \label{sec:architecture}
-Our system consumes an aggregated events stream as input\footnote{In practice, the aggregated input events stream is composed of multiple input event streams for multiple moving objects, which are reconstructed bt the system internally.} of large number of moving objects, which is continuously collected and fed into the system. It allows users to register a pattern $\mathcal{P}$ to be monitored over each event stream of a moving object. Output stream consists of original input events alongside with predictions of full matches of $\mathcal{P}$ is outputted to be displayed to the end users. Figure ~\ref{fig:architecture} presents the overview of our system architecture and its main components.      
+Our system consumes an aggregated events stream as input\footnote{In practice, the aggregated input events stream is composed of multiple event streams (partitions) for multiple moving objects, which are reconstructed bt the system internally.} of large number of moving objects, which is continuously collected and fed into the system. It allows users to register a pattern $\mathcal{P}$ to be monitored over each event stream of a moving object. Output stream consists of original input events alongside with predictions of full matches of $\mathcal{P}$ is outputted to be displayed to the end users. Figure ~\ref{fig:architecture} presents the overview of our system architecture and its main components.      
 
 
 \begin{figure}[h]
