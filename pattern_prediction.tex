@@ -1,4 +1,4 @@
-\section{RELATED WORK AND BACKGROUND}
+
 
 \subsection{Pattern prediction over event streams}
 
@@ -10,9 +10,7 @@ This is the task of time-series forecasting \cite{montgomery_introduction_2015}.
 Another way to formalize this task is to view streams as sequences of events,
 i.e., tuples with multiple, possibly categorical, attributes, like \textit{event type}, \textit{timestamp}, etc. 
 In this work that we present here, 
-we focus on this latter definition of forecasting (event forecasting).  
-
-A substantial body of work on event forecasting comes from the field of temporal pattern mining where events are defined as 2-tuples of the form $(\mathit{EventType},\mathit{Timestamp})$.
+we focus on this latter definition of forecasting (event forecasting).  A substantial body of work on event forecasting comes from the field of temporal pattern mining where events are defined as 2-tuples of the form $(\mathit{EventType},\mathit{Timestamp})$.
 The ultimate goal is to extract patterns of events in the form either of association rules \cite{agrawal_mining_1993} or frequent episode rules \cite{mannila_discovery_1997}. 
 These methods have been extended in order to be able to learn not only rules for detecting event patterns but also rules for predicting events.
 For example, in \cite{vilalta_predicting_2002}, a variant of association rule mining is where the goal is to extract sets of event types that frequently lead to a rare, target event within a temporal window. 
@@ -92,7 +90,7 @@ In order to estimate the final forecasts, another step is required,
 since our aim is not to provide a single future point with the highest probability but an interval. 
 Forecasts are given in the form of intervals, like $I=(\mathit{start},\mathit{end})$. 
 The meaning of such an interval is that the DFA is expected to reach a final state sometime in the future between $\mathit{start}$ and $\mathit{end}$ with probability at least some constant threshold $\theta_{fc}$ (provided by the user). 
-These intervals are estimated by a sinlge-pass algorithm that scans a waiting-time distribution and finds the smallest (in terms of length) interval that exceeds this threshold. 
+These intervals are estimated by a single-pass algorithm that scans a waiting-time distribution and finds the smallest (in terms of length) interval that exceeds this threshold. 
 An example is shown in Figure \ref{fig:wtdfas},
 where the DFA in Figure \ref{fig:dfa1} is in state $1$,
 the \textit{waiting-time} distributions for all of its non-final states are shown in Figure \ref{fig:wt1}
@@ -127,4 +125,4 @@ then the maximum likelihood estimator for $\pi_{i,j}$ is given by:
 \hat{\pi}_{i,j}=\frac{n_{i,j}}{\sum_{k \in Q} n_{i,k}}=\frac{n_{i,j}}{n_{i}}
 \end{equation*}
 Executing this learning step on a single node might require a substantial amount of time until we arrive at a sufficiently good model.
-In what follows, we present a distributed method for learning the transition matrix.
+In this paper, we present a distributed method for learning the transition matrix.
