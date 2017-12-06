@@ -1,0 +1,53 @@
+\section{EMPIRICAL EVALUATION}
+\label{sec:results}
+In this section, we evaluate the performance of our system using real-world event streams provided by the datAcron project in the context of maritime domains. The used event streams describe trajectory critical points (i.e., synopses) of moving vessels, which are derived from raw AIS messages as was  described in \cite{synopses1}. In particular, for our evaluation we used a data set of synopses contains $4,684,444$ critical points of $5055$ vessels sailing in the Atlantic Ocean during the period from 1 October 2015 to 31 March 2016. We use it to generate a simulated stream of event tuples  $(id,type,timestamp,longitude,latitude,annotation,speed,heading)$,  where $type \in \Sigma$ and $\Sigma=\{VerySlow,Slow,Moving,Sailing,Stopping\}$ that is based on the  vessel speed, and $annotation$ is an attribute to encode the trajectory movement events such as speed change, slow motion, and gap in reporting. In our experiments, we monitor a pattern $\mathcal{P}=Sailing$ that detects when the vessel under way (sailing) with order $m=2$.
+
+
+\subsubsection*{Experimental setup} We ran our experiments on single-node standalone Flink cluster deployed on a server (Ubuntu 17.04) with Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz × 8 processors and 32GB RAM. We used Apache Flink v1.3.2 and Apache Kafka v0.10.2.1 for our tests.
+
+
+\subsubsection*{Evaluation criteria} Our goal is to evaluate our distributed pattern prediction based on enabling the synchronization of PMC models between the predictors against the isolated ones (i.e., without exchanging information), we compare the predictive performance in terms of :
+\begin{enumerate*}[label=(\roman*)]
+	
+\item  average $\mathit{precision = \frac{\#\ of\ correct\ predictions}{\#\ of\ total\ predictions}}$ per predictor node
+
+\item $\mathit{cumulative\ error}$ that presents the aggregated number of all wrong predictions.
+
+\item $\mathit{recall}$ that measures the fraction of actual full matches of the defined pattern does the model predicate at least once in previous prediction report
+
+\end{enumerate*} 
+Moreover, we study the communication cost by measuring the $\mathit{cumulative\ communication}$ that captures the number of  synchronization related messages, which is introduced by employing the static or dynamic synchronization schemes of the distributed online learning protocol. 
+
+\subsubsection*{Experimental results} Figure ~\ref{fig:precsions} depicts the precision scores 
+(i.e., average precision of predictors)  of all approaches, namely, isolated without synchronization, continuous synchronization, static (periodic), and our proposed approach based on the dynamic synchronization scheme. While Figure ~\ref{fig:error} shows the average cumulative error per predictor.       
+
+
+
+\begin{figure}[]
+	\begin{centering}
+		\subfloat[Precision scores]{
+			\includegraphics[width=.5\textwidth]{figures/precisions1.png}
+			\label{fig:precsions}
+		}
+		\hfill
+		\subfloat[Cumulative error]{
+			\includegraphics[width=.5\textwidth]{figures/error.png}
+			\label{fig:error}
+		}
+		
+		%\hfill
+		\caption{Average precision and commutative error of predictors for $\mathcal{P}=Sailing$ with $m=2$, $b=100$,  $\Delta=2$, and $\theta_{fc}=80\%$.}
+		\label{fig:error_precsions}
+	\end{centering}
+\end{figure}
+
+
+\par In Figure ~\ref{fig:recall}, we present the results in terms of recall for the different approaches. it can be seen 
+
+\begin{figure}[ht!]
+	
+	\includegraphics[width=.5\textwidth]{figures/recall.png}
+	
+	\caption{Recall for each approach over $\mathcal{P}=Sailing$ with $m=2$, $b=100$,  $\Delta=2$, and $\theta_{fc}=80\%$.}
+	\label{fig:recall}
+\end{figure}
