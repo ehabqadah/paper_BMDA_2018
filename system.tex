@@ -126,7 +126,7 @@ then the maximum likelihood estimator for $\pi_{i,j}$ is given by:
 \hat{\pi}_{i,j}=\frac{n_{i,j}}{\sum_{k \in Q} n_{i,k}}=\frac{n_{i,j}}{n_{i}}
 \end{equation*}
 Executing this learning step on a single node might require a substantial amount of time until we arrive at a sufficiently good model.
-In this paper, we present a distributed method for learning the transition matrix.
+In this paper, we present a distributed method for learning the transition probability matrix.
 
 \subsection{Forecasting on multiple streams}
 
@@ -144,9 +144,9 @@ The defined pattern $\mathcal{P}$ is monitored over each event stream $s_i$  by 
 
 \subsubsection{The Proposed Approach}
 \label{sec:proposed_approach}
-\par We design and develop a scalable and distributed patterns prediction system over massive input event streams of moving objects. We  exploit the event forecasting with Pattern Markov Chains \cite{alevizos2017event} as the base prediction model (i.e., $f_i$). Moreover,  we propose to enable the information exchange between the distributed predictors/learners of the input event streams, by adapting the distributed online predication protocol \cite{kamp2014communication} to synchronize the prediction models, i.e., the transitions probabilities of the Pattern Markov Chain (PMC) predictors.
+\par We design and develop a scalable and distributed patterns prediction system over massive input event streams of moving objects. We  exploit the event forecasting with Pattern Markov Chains \cite{alevizos2017event} as the base prediction model. Moreover,  we propose to enable the information exchange between the distributed predictors/learners of the input event streams, by adapting the distributed online predication protocol \cite{kamp2014communication} to synchronize the prediction models, i.e., the transitions probabilities of the Pattern Markov Chain (PMC) predictors.
 
-\par Algorithm~\ref{algonline:dol} presents the distributed online prediction protocol by dynamic model synchronization on both the predictor nodes and the coordinator. When a predictor $n_j:\ j \in[k]$ observes an event $e_i$ it revises its internal model state and provides a prediction. Then it checks the local conditions  (batch size $b$ and local model divergence from a reference vector $r$) to decide if there is a need to synchronize its local model with the coordinator or not. The typical choice of $r$ is the last computed aggregated model from the previous synchronization step, which is shared between all local predictors/learners. By monitoring the local condition $\|f_j - r\|^2 > \Delta$ on all local predictors, we have a guarantee that if none of the local conditions is violated, the divergence (i.e., variance of local models $\delta(f)=\frac{1}{k} \sum_{j=1}^{k}\|f_j - \hat{f}\|^2$) does not exceed the threshold $\Delta$ \cite{kamp2014communication}. 
+\par Algorithm~\ref{algonline:dol} presents the distributed online prediction protocol by dynamic model synchronization on both the predictor nodes and the coordinator. We refer to the PMC's transition matrix $\boldsymbol{\Pi}_i$ on predictor node $n_i$ by $f_i$. That is, when a predictor $n_i:\ i \in[k]$ observes an event $e_j$ it revises its internal model state (i.e., $f_i$) and provides a prediction report. Then it checks the local conditions  (batch size $b$ and local model divergence from a reference model $f_r$) to decide if there is a need to synchronize its local model with the coordinator or not. The typical choice of $f_r$ is the last computed aggregated model from the previous synchronization step, which is shared between all local predictors/learners. By monitoring the local condition $\|f_i - f_r\|^2 > \Delta$ on all local predictors, we have a guarantee that if none of the local conditions is violated, the divergence (i.e., variance of local models $\delta(f)=\frac{1}{k} \sum_{j=1}^{k}\|f_i - \hat{f}\|^2$) does not exceed the threshold $\Delta$ \cite{kamp2014communication}. 
 
 
 
@@ -155,42 +155,46 @@ The defined pattern $\mathcal{P}$ is monitored over each event stream $s_i$  by 
 \begin{algorithm}
 	\caption{Communication-efficient Distributed Online Learning Protocol } 
 	\begin{algorithmic}[1] 
-		\Statex  \Indm  \textbf{Predictor} node $n_j$: at observing event $e_i$
-		\Statex \Indp update prediction model $f_{j}$ and provide a prediction service 
+		\Statex  \Indm  \textbf{Predictor} node $n_i$: at observing event $e_j$
+		\Statex \Indp update the prediction model parameters $f_i$ and provide a prediction service 
 
-		\Statex \If {$i\mod b = 0\ and\ \|f_j - r\|^2 > \Delta$}  
-		\Statex send  $f_{j}$ to the Coordinator (violation) 
+		\Statex \If {$j\mod b = 0\ and\ \|f_i - f_r\|^2 > \Delta$}  
+		\Statex send  $f_i$ to the Coordinator (violation) 
 		\Statex \Indm \textbf{Coordinator}:
 		\Statex \Indp receive local models with violation
-		 $\Pi=\{f_{j}\}_{j=1}^m$
+		 $B=\{f_i\}_{i=1}^m$
 	
 	
-		\Statex \While{$|\Pi| \neq k $ and $\frac{1}{|\Pi|} \ \sum_{f_j\in  \Pi}\|f_j - \hat{f}\|^2 > \Delta$}{
+		\Statex \While{$|B| \neq k $ and $\frac{1}{|B|} \ \sum_{f_i\in  \Pi}\|f_i - \hat{f}\|^2 > \Delta$}{
 			
-			 \Statex  add other nodes have not reported violation for their models $ \Pi \gets \{f_l : f_l \notin \Pi\ and\ l \in [k]\}$   
-			\Statex  recieve models from nodes add to $\Pi$
+			 \Statex  add other nodes have not reported violation for their models $ B \gets \{f_l : f_l \notin B\ and\ l \in [k]\}$   
+			\Statex  receive models from nodes add to $B$
 	}
         \Statex
 		\Statex compute a new global model $\hat{f}$ 
-		\Statex send $\hat{f}$ to all the predictor nodes in $\Pi$ and set $f_{1}\dots, f_{m}=\hat{f} $ 
-		\Statex \If {$|\Pi| = k$}{
-		\Statex set a new reference vector $r	\gets \hat{f}$ }
+		\Statex send $\hat{f}$ to all the predictor nodes in $B$ and set $f_{1}\dots, f_{m}=\hat{f} $ 
+		\Statex \If {$|B| = k$}{
+		\Statex set a new reference model $f_r	\gets \hat{f}$ }
 	\end{algorithmic}
 	\label{algonline:dol}
 \end{algorithm}
 
 
-This protocol was introduced for linear models, and has been  extended to handle kernelized online learning models \cite{kamp2016communication}. In this paper, we address to employee this protocol for the online event patterns prediction model (see Section \ref{sec:proposed_approach}), which is internally based on the Pattern Markov Chain (PMC) predictors. This adaption allows the distributed PMC predictors on multiple event streams to  synchronize their models within the system in a communication-efficient manner. 
+\par This protocol was introduced for linear models, and has been  extended to handle kernelized online learning models \cite{kamp2016communication}. In this paper, we address to employee this protocol for the online event patterns prediction model, which is internally based on the Pattern Markov Chain (PMC) predictors. This adaption allows the distributed PMC predictors on multiple event streams to  synchronize their models within the system in a communication-efficient manner. 
 
 
 
-\par We propose a $synchronization\ operation$  for the distributed PMC models based on the maximum-likelihood estimation \citep{anderson1957statistical} for the transition probabilities matrix of the underlying Markov Chain described by: 
+\par We propose a $synchronization\ operation$ for the models parameters ($f_i=\boldsymbol{\Pi}_i :i \in[k]$) of the $k$ distributed PMC predictors . The operation based on distributing the maximum-likelihood estimation \cite{anderson1957statistical} for the transition probabilities matrix of the underlying first order Markov Chain of PMC models described by: 
 \begin{equation*}
 \label{eq:dis_pi_estim}
 \hat{\pi}_{i,j}=\frac{\sum_{k \in K} n_{k,i,j}}{\sum_{k \in K} \sum_{l \in L} n_{k,i,l}}
 \end{equation*}
 
-
+\par Moreover, we measure the divergence of local models from the reference model  $\|f_k - f_r\|^2$ by calculating the square distance between the  $\boldsymbol{\Pi}_i$ and  $\boldsymbol{\Pi}_r$:
+\begin{equation*}
+\label{eq:dis_pi_varinace}
+\|f_k - f_r\|^2=\sum_{i,j} (\hat{\pi}_k{i,j} -\hat{\pi}_r{i,j})^2
+\end{equation*}
 \par Our approach relies on enabling the collaborative learning between the prediction models of  the input event streams. By doing so, we assume that the underlying event streams belong to the same  distribution and share the same behavior (e.g., mobility patterns). We claim that assumption is reasonable in many application domains, for instance, in the context of maritime surveillance, vessels travel through defined routes by International Maritime Organization (IMO). Additionally, vessels have similar mobility patterns in specific areas such as moving with low speed and multiple turns near the ports \cite{pallotta2013vessel,liu2014knowledge}. That allows our system to dynamically construct a coherent global prediction model for all input event streams based on merging their local prediction models.
 
 % may add it to conclusion 
