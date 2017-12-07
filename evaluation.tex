@@ -1,6 +1,6 @@
 \section{EMPIRICAL EVALUATION}
 \label{sec:results}
-In this section, we evaluate the performance of our system using real-world event streams provided by the datAcron project in the context of maritime domains. The used event streams describe trajectory critical points (i.e., synopses) of moving vessels, which are derived from raw AIS messages as was  described in \cite{synopses1}. In particular, for our evaluation we used a data set of synopses contains $4,684,444$ critical points of $5055$ vessels sailing in the Atlantic Ocean during the period from 1 October 2015 to 31 March 2016. We use it to generate a simulated stream of event tuples  $(id,type,timestamp,longitude,latitude,annotation,speed,heading)$,  where $type \in \Sigma$ and $\Sigma=\{VerySlow,Slow,Moving,Sailing,Stopping\}$ that is based on the  vessel speed, and $annotation$ is an attribute to encode the trajectory movement events such as speed change, slow motion, and gap in reporting. In our experiments, we monitor a pattern $\mathcal{P}=Sailing$ that detects when the vessel under way (sailing).
+In this section, we evaluate the performance of our system using real-world event streams provided by the datAcron project in the context of maritime domains. The used event streams describe trajectory critical points (i.e., synopses) of moving vessels, which are derived from raw AIS messages as was  described in \cite{synopses1}. In particular, for our evaluation we used a data set of synopses contains $4,684,444$ critical points of $5055$ vessels sailing in the Atlantic Ocean during the period from 1 October 2015 to 31 March 2016. We use it to generate a simulated stream of event tuples  \textit{(id,type,timestamp, longitude, latitude, annotation, speed, heading)},    where $type$ $\in \Sigma$ and $\Sigma=$ $\{$\textit{VerySlow ,Slow, Moving, Sailing, Stopping} $\}$ that is based on the  vessel speed, and $annotation$ is an attribute to encode the trajectory movement events such as speed change, slow motion, and gap in reporting. In our experiments, we monitor a pattern $\mathcal{P}=Sailing$ that detects when the vessel under way (sailing).
 
 
 \subsubsection*{Experimental setup} We ran our experiments on single-node standalone Flink cluster deployed on a server (Ubuntu 17.04) with Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz X 8 processors and 32GB RAM. We used Apache Flink v1.3.2 and Apache Kafka v0.10.2.1 for our tests.
@@ -29,8 +29,6 @@ Moreover, we study the communication cost by measuring the $\mathit{cumulative\ 
 \subsubsection*{Experimental results} Figure ~\ref{fig:precsions} depicts the precision scores (i.e., average precision of prediction model per vessel)  of all approaches, namely, isolated without synchronization, continuous synchronization, static (periodic), and our proposed approach based on the dynamic synchronization scheme. While Figure ~\ref{fig:error} shows the average cumulative error per predictor.       
 
 
-
-
 \begin{figure}[]
 	
 	\includegraphics[width=.5\textwidth]{figures/error.png}
@@ -39,7 +37,7 @@ Moreover, we study the communication cost by measuring the $\mathit{cumulative\ 
 \label{fig:error}
 \end{figure}
 
-\par In Table ~\ref{tab:recall}, we present the statistics of  recall results for the different approaches. It can be seen 
+\par In Table ~\ref{tab:recall}, we present the statistics of recall results for the different approaches. It can be seen 
 
 
 \begin{figure}[]
@@ -56,14 +54,13 @@ Moreover, we study the communication cost by measuring the $\mathit{cumulative\ 
 		\toprule
 		Approach &Mean&Max\\
 		\midrule
-		isolated & .1948  & 0.23 \\
-		static & .1976  &  0.23 \\
-		dynamic & .1974  & 0.23 \\
-		full-sync & .1979  & 0.33 \\
+		isolated & 0.1948  & 0.23 \\
+		static & 0.1976  &  0.23 \\
+		dynamic & 0.1974  & 0.23 \\
+		full-sync & 0.1979  & 0.33 \\
 		\bottomrule
 	\end{tabular}
 \end{table}
 
 
-
-Figure ~\ref{fig:comm} provides the accumulated communication complexity.
+Figure ~\ref{fig:comm} provides the accumulated communication required for the three approaches based on the distributed online learning. As expected, larger amount of communication is required for the continuous synchronization comparing to static and dynamic approaches, and it can bee seen with small variance threshold $\Delta=2$ that we can reduce the communication using the dynamic synchronization and comparing the (static) periodic method, and furthermore, still preserving the predictive performance as was shown in Figures ~\ref{fig:precsions} and ~\ref{fig:error}.  
