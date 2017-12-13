@@ -3,11 +3,12 @@
 \par In the last years, many systems for large-scale and distributed stream processing have been proposed, including Spark Streaming \cite{Spark},  Apache Storm \cite{Storm} and Apache Flink \cite{Flink}. These frameworks can ingest and process real-time data streams, published from different distributed message queuing platforms, such as Apache Kafka \cite{Kafka} or  Amazon Kinesis \cite{Kinesis}. In this work, we implemented the proposed system over Apache Flink. Flink provides the distributed stream processing components of the distributed event pattern predictors. It works alongside Apache kafka,
 which is employed for streaming the input event streams and as a messaging platform to enable the distributed online learning functionalities.
 
-\textcolor{red}{I believe the paragraph below is not so relevant and could be omitted}
 
-\textbf{
-In the datAcron project, the Flink streaming processing engine has been chosen as a primary platform for supporting the streaming operations, based on an internal comparative evaluation of several streaming platforms. Thus in this work we used it to implement our system. Although the distributed online learning framework has already been implemented in the FERARI project \cite{flouris2016ferari} based on Apache Storm.
-}
+%\textcolor{red}{I believe the paragraph below is not so relevant and could be omitted}
+%
+%\textbf{
+%In the datAcron project, the Flink streaming processing engine has been chosen as a primary platform for supporting the streaming operations, based on an internal comparative evaluation of several streaming platforms. Thus in this work we used it to implement our system. Although the distributed online learning framework has already been implemented in the FERARI project \cite{flouris2016ferari} based on Apache Storm.
+%}
 
 % In Storm, a distributed application is expressed as a "topology", in which the individual processing steps called "Bolts" are connected
 %in a data workflow. This means, that each Bolt can is sending and receiving data streams from other Bolts, for example, there are bolts generating
