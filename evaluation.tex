@@ -17,62 +17,110 @@ We compare our proposed system against the isolated prediction approach, we comp
 	
 \item  $\mathit{precision = \frac{\#\ of\ correct\ predictions}{\#\ of\ total\ predictions}}$ is the percent of the produced predictions are correct (i.e., a full match occurred within the prediction interval).   
 
-\item $\mathit{recall}$ is the fraction of the full matches of the pattern are successfully predicted by the system at least once. 
+\item $\mathit{spread} =end(I) -start(I)$ is the width of the prediction interval $I$. 
 
 \end{enumerate*} 
-\par Moreover, we study the communication cost by measuring the $\mathit{cumulative\ communication}$ that captures the number of messages are required to perform the distributed online learning modes to synchronize the prediction models. In next, we present the experimental results for the patterns  $\mathcal{P}_1=Sailing$ with an order of $m=2$, and   $\mathcal{P}_2=$\textit{changeInHeading; gapStart; gapEnd; changeInHeading} with first order $m=1$. As well as all experiments are performed with batch size equals 100  ($b=100$), a variance threshold of 2 ($\Delta=2$), and $80\%$ as PMC prediction threshold ($\theta_{fc}=80\%$).
+\par Moreover, we study the communication cost by measuring the $\mathit{cumulative\ communication}$ that captures the number of messages are required to perform the distributed online learning modes to synchronize the prediction models. In next, we present the experimental results for the patterns  $\mathcal{P}_1=Sailing$ with an order of $m=2$, and   $\mathcal{P}_2=$\textit{changeInHeading; gapStart; gapEnd; changeInHeading} with first order $m=1$. As well as all experiments are performed with setting the batch size to 100  ($b=100$), the variance threshold of 2 ($\Delta=2$), $80\%$ as PMC prediction threshold ($\theta_{fc}=80\%$), and 200 for the maximum spread is allowed.
 
 \begin{figure}[h]
 	
-	\includegraphics[width=.5\textwidth,height=.3\textheight]{figures/precision.png}
+	\includegraphics[width=.5\textwidth]{figures/precision_p1.png}
 	
 	\caption{Precision scores with respect to the number of input events over time for $\mathcal{P}_1$.}
 	\label{fig:precsions}
 \end{figure}
 
 \subsubsection*{Experimental results} Figure ~\ref{fig:precsions} depicts the average precision scores of predictions models (one prediction model per vessel) of all approaches for the first pattern $\mathcal{P}_1=Sailing$, namely, isolated without synchronization, continuous (full-sync), static, and our recommended approach based on the dynamic synchronization scheme. It can be clearly seen that all methods of distributed learning outperform the isolated prediction models. The most complex method, continuous synchronization, has the higher precision rates, while the static and dynamic synchronization schemes have a close precision scores.
+ 
 
-In addition, we have found that in order to have an improvement in terms of precision for the second pattern ($\mathcal{P}_2$), a slight modification is needed that to only enable the synchronization of the prediction models associated with vessels that belong to the same type. Currently, this change is technically performed by an extra filter step that passes only one type of vessels at time, while multiple runs of the system are required for all vessel types. Fore example, Figure ~\ref{fig:precsions_p2} shows the precision scores for vessels of type \textit{PLEASURE CRAFT}. An interesting observation is that the dynamic synchronization approach has the higher precision scores.  
 
- \begin{figure}[h]
- 	
- 	\includegraphics[width=.5\textwidth,height=.3\textheight]{figures/precision_p2.png}
- 	
- 	\caption{Precision scores of $\mathcal{P}_2$  for \textit{PLEASURE CRAFT} vessels.}
- 	\label{fig:precsions_p2}
- \end{figure}
  
  
-\par On the other hand, Figure ~\ref{fig:comm} provides the amount of the accumulated communication that is required by the three modes of the distributed online learning, while, the isolated approach does not require any communication between the predictors. These results are shown  $\mathcal{P}_1$, while we have omitted the measurements of  $\mathcal{P}_2$ since it has shown a similar behavior.  As expected, a larger amount of communication is required for the continuous synchronization comparing to the static and dynamic approaches, and it can bee seen that we can reduce the communication overhead by applying the dynamic synchronization protocol (a reduction by a factor of 100) comparing to the static synchronization scheme, even with a small variance threshold $\Delta=2$. Furthermore,  the dynamic  protocol is still preserving a close predictive performance to the static one (see Figure ~\ref{fig:precsions}).    
-
+\par On the other hand, Figure ~\ref{fig:comm} provides the amount of the accumulated communication that is required by the three modes of the distributed online learning, while, the isolated approach does not require any communication between the predictors. These results are shown  $\mathcal{P}_1$.  As expected, a larger amount of communication is required for the continuous synchronization comparing to the static and dynamic approaches, and it can bee seen that we can reduce the communication overhead by applying the dynamic synchronization protocol (a reduction by a factor of 100) comparing to the static synchronization scheme, even with a small variance threshold $\Delta=2$. Furthermore,  the dynamic  protocol is still preserving a close predictive performance to the static one (see Figure ~\ref{fig:precsions}).    
 
 \begin{center}
 	
 	\begin{figure}[h]
 		
-		\includegraphics[width=.5\textwidth,height=.3\textheight]{figures/communication.png}
+		\includegraphics[width=.5\textwidth]{figures/communication.png}
 		
 		\caption{Commutative communication with respect to the number of input events over time for $\mathcal{P}_1$.}
 		\label{fig:comm}
 	\end{figure}
 \end{center}
 
-\par In Table ~\ref{tab:recall}, we present the mean of the recall scores for the both patterns in the all approaches It can be seen that the different approaches have a close recall scores, while the most frequent pattern ($\mathcal{P}_1$) has a lower recall than $\mathcal{P}_2$.
 
-\begin{table}[h]
-	\caption{Average recall for  $\mathcal{P}_1$ and $\mathcal{P}_2$.}
-	\label{tab:recall}
-	\begin{tabular}{lcc}
-		\toprule
-		Approach &Mean recall for $\mathcal{P}_1$ &Mean recall for $\mathcal{P}_2$\\
-		\midrule
-		isolated & 0.1707  &0.947 \\
-		static & 0.1754  &  0.960 \\
-		dynamic & 0.174  & 0.0.964 \\
-		full-sync & 0.1817  & 0.972 \\
-		\bottomrule
-	\end{tabular}
-\end{table}
+We have investigated the effect of the distributed synchronization of the prediction models on the average spread value, Figure  ~\ref{fig:spread}  shows the spread results for all approaches. It can be seen that the spread is higher for the distributed learning based methods comparing to the isolated approach. Furthermore, the average spread is decreasing over time, as result of confidence increase by the models. This may explain the drop in the precision scores from the beginning until reaching the convergence. 
+
+\begin{center}
+	
+	\begin{figure}[h]
+		
+		\includegraphics[width=.5\textwidth]{figures/spread_p1.png}
+		
+		\caption{Average spread for $\mathcal{P}_1$.}
+		\label{fig:spread}
+	\end{figure}
+\end{center}
+
+
+
+
+In addition, we have found that in order to have an improvement in terms of precision for the second pattern ($\mathcal{P}_2$), a slight modification is needed that to only enable the synchronization of the prediction models associated with vessels that belong to the same type. Currently, this change is technically performed by an extra filter step that passes only one type of vessels at time, while multiple runs of the system are required for all vessel types. Fore example, Figure ~\ref{fig:precsions_p2} shows the precision scores for vessels of type \textit{PLEASURE CRAFT}. An interesting observation is that the dynamic synchronization approach still has  a higher precision scores than the isolated approach. 
+
+
+ \begin{figure}[h]
+	
+	\includegraphics[width=.5\textwidth]{figures/precision_p2.png}
+	
+	\caption{Precision scores of $\mathcal{P}_2$  for \textit{PLEASURE CRAFT} vessels.}
+	\label{fig:precsions_p2}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%\par In Table ~\ref{tab:recall}, we present the mean of the recall scores for the both patterns in the all approaches It can be seen that the different approaches have a close recall scores, while the most frequent pattern ($\mathcal{P}_1$) has a lower recall than $\mathcal{P}_2$.
+%
+%\begin{table}[h]
+%	\caption{Average recall for  $\mathcal{P}_1$ and $\mathcal{P}_2$.}
+%	\label{tab:recall}
+%	\begin{tabular}{lcc}
+%		\toprule
+%		Approach &Mean recall for $\mathcal{P}_1$ &Mean recall for $\mathcal{P}_2$\\
+%		\midrule
+%		isolated & 0.1707  &0.947 \\
+%		static & 0.1754  &  0.960 \\
+%		dynamic & 0.174  & 0.0.964 \\
+%		full-sync & 0.1817  & 0.972 \\
+%		\bottomrule
+%	\end{tabular}
+%\end{table}
 
 
  
