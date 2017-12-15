@@ -4,22 +4,24 @@
 
 
 %algorthims
-\usepackage{algorithmicx}
+%\usepackage{algorithmicx}
+
 %\def\NoNumber#1{{\def\alglinenumber##1{}\State #1}\addtocounter{ALG@line}{-1}}
 
-\usepackage{verbatim} % for multiple line comment
-\usepackage[final]{pdfpages} %include pdf files
-\usepackage{amsmath}
-\usepackage{amssymb}
-\mathchardef\mhyphen="2D % Define a "math hyphen" 
-\usepackage{amsthm}
-\usepackage{eufrak}
-\crefname{algocf}{Algorithm}{Algorithms}
+%\usepackage{verbatim} % for multiple line comment
+%\usepackage[final]{pdfpages} %include pdf files
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\mathchardef\mhyphen="2D % Define a "math hyphen" 
+%\usepackage{amsthm}
+%\usepackage{eufrak}
+%\crefname{algocf}{Algorithm}{Algorithms}
 
 \usepackage[ruled,vlined,noend]{algorithm2e}
+\SetKwFor{While}{while}{do}{endw}
 %algorithm package
-\linespread{1.1} % Definition of the linespread
-\usepackage[tbtags]{mathtools}
+%\linespread{1.1} % Definition of the linespread
+%\usepackage[tbtags]{mathtools}
 \DeclareMathOperator*{\somefunc}{somefunc}
 \SetKwInput{KwInput}{Input}
 \SetKwInput{KwOutput}{Output}
@@ -37,7 +39,6 @@
 \def\pmczeror{$\mathit{PMC_{\mathcal{P}}^{0}}$}
 \def\pmconer{$\mathit{PMC_{\mathcal{P}}^{1}}$}
 \def\pfc{$\mathit{P_{fc}}$}
-
 
 \usepackage{listings}
 \usepackage{color}
@@ -139,7 +140,7 @@
 
 
 \begin{abstract}
-In this paper, we present a distributed online prediction system for user-defined patterns over multiple massive streams of movement events, built using the general purpose stream processing framework Apache Flink. The proposed approach is based on combining probabilistic event pattern prediction models on multiple predictor nodes with a distributed online learning protocol in order to continuously learn the parameters of a global prediction model and share them among the predictors in a communication-efficient way. Our approach enables the  collaborative learning between the predictors (i.e., "learn from each other"), thus the learning rate is accelerated with less data. The underlying model provides online predictions about when a pattern (i.e., a regular expression over the event types) is expected to be completed within each event stream. We describe the distributed architecture of the proposed system, its implementation in Flink, and present experimental results over real-world event streams related to trajectories of moving vessels.
+In this paper, we present a distributed online prediction system for user-defined patterns over multiple massive streams of movement events, built using the general purpose stream processing framework Apache Flink. The proposed approach is based on combining probabilistic event pattern prediction models on multiple predictor nodes with a distributed online learning protocol in order to continuously learn the parameters of a global prediction model and share them among the predictors in a communication-efficient way. Our approach enables the  collaborative learning between the predictors (i.e., "learn from each other"), thus the learning rate is accelerated with less data for each predictor. The underlying model provides online predictions about when a pattern (i.e., a regular expression over the event types) is expected to be completed within each event stream. We describe the distributed architecture of the proposed system, its implementation in Flink, and present experimental results over real-world event streams related to trajectories of moving vessels.
 
 \end{abstract}
 

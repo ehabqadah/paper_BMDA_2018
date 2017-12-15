@@ -8,7 +8,7 @@
 For our work presented in this paper,
 we use the approach described in \cite{alevizos2017event}.
 For the sake of self-containment,
-we briefly describe this approach in what follows,
+we briefly describe this approach in the following,
 first assuming that only a single stream is consumed
 and then adjusting for the case of multiple streams.
 We follow the terminology of \cite{luckham2008power,alevizos2015complex,zhou_pattern_2015} to formalize the problem we tackle.
@@ -113,7 +113,7 @@ Therefore, it is crucial for a system implementing this method to have the capab
 One way to do this is to use some part of the stream to obtain the maximum-likelihood estimators for the transition probabilities. 
 If $\boldsymbol{\Pi}$ is the transition matrix of a Markov chain with a set of states $Q$, 
 $\pi_{i,j}$ the transition probability from state $i$ to state $j$,
-$n_{i,j}$ the number of transitions from state $i$ to state $j$,
+$n_{i,j}$ the number of observed transitions from state $i$ to state $j$,
 then the maximum likelihood estimator for $\pi_{i,j}$ is given by:
 \begin{equation*}
 \label{eq:pi_estim}
@@ -132,8 +132,8 @@ Let $\mathcal{P}$ be a user-defined pattern which we want to apply to every stre
 i.e., each object will have its own DFA.
 
 \par The setting that is considered in this work is then described in the following:
-we have multiple input event streams and a system consisting of \emph{$K$} distributed predictor nodes $n_1,n_2...,n_k$, each of which consumes an input event stream $s_i\in S$. The goal is to provide timely predictions and be able to do this in scale.
-Each node $n_i$ $ i \in [K]$ handles a single event stream $s_i$ associated with a moving object $o_i \in O$. In addition,  it  maintains a local prediction model $f_i$ for the user-defined pattern $\mathcal{P}$. The $f_i$ model provides the online prediction about the future full match of the pattern $\mathcal{P}$ in $s_i$  for each new arriving event tuple. In short, we have multiple running instances of an online prediction algorithm on distributed nodes for multiple input event streams. More specifically, the input to our system consists of massive streams of events  that describe trajectories of moving vessels in the context of maritime surveillance, where there is one predictor node for each vessel's event stream.
+we have \emph{$K$} input event streams $S$ and a system consisting of \emph{$K$} distributed predictor nodes $n_1,n_2...,n_k$, each of which consumes an input event stream $s_i\in S$. The goal is to provide timely predictions and be able to do this at large-scale.
+Each node $n_i$ handles a single event stream $s_i$ associated with a moving object $o_i \in O$. In addition,  it  maintains a local prediction model $f_i$ for the user-defined pattern $\mathcal{P}$. The $f_i$ model provides the online prediction about the future full match of the pattern $\mathcal{P}$ in $s_i$  for each new arriving event tuple. In short, we have multiple running instances of an online prediction algorithm on distributed nodes for multiple input event streams. More specifically, the input to our system consists of massive streams of events  that describe trajectories of moving vessels in the context of maritime surveillance, where there is one predictor node for each vessel's event stream.
   
 %
 %The defined pattern $\mathcal{P}$ is monitored over each event stream $s_i$  by a  predictor nodes  $n_i$  that maintains a local prediction model $f_i$, where there is one node for each vessel's event stream.  The prediction model $f_i$ gives the ability to provide an online predictions about when the pattern will be completed in the form of an expected number of future events before a full match does occur.
@@ -142,33 +142,34 @@ Each node $n_i$ $ i \in [K]$ handles a single event stream $s_i$ associated with
 \label{sec:proposed_approach}
 \par We design and develop a scalable and distributed patterns prediction system over massive input event streams of moving objects. As the base prediction model, we use the PMC forecasting method \cite{alevizos2017event}. Moreover,  we propose to enable the information exchange between the distributed predictors/learners of the input event streams, by adapting the distributed online prediction protocol of \cite{kamp2014communication} to synchronize the prediction models, i.e., the transitions probabilities matrix of the PMC predictors.
 
-\par Algorithm~\ref{algonline:dol} presents the distributed online prediction protocol by dynamic model synchronization on both the predictor nodes and the coordinator. We refer to the PMC's transition matrix $\boldsymbol{\Pi}_i$ on predictor node $n_i$ by $f_i$. That is, when a predictor $n_i:\ i \in[k]$ observes an event $e_j$ it revises its internal model state (i.e., $f_i$) and provides a prediction report. Then it checks the local conditions  (batch size $b$ and local model divergence from a reference model $f_r$) to decide if there is a need to synchronize its local model with the coordinator or not.  $f_r$ is maintained in the predictor node as a copy of the last computed aggregated model $\hat{f}$ from the previous full synchronization step, which is shared between all local predictors/learners. By monitoring the local condition $\|f_i - f_r\|^2 > \Delta$ on all local predictors, we have a guarantee that if none of the local conditions is violated, the divergence (i.e., variance of local models $\delta(f)=\frac{1}{k} \sum_{j=1}^{k}\|f_i - \hat{f}\|^2$) does not exceed the threshold $\Delta$ \cite{kamp2014communication}. 
+\par Algorithm~\ref{algonline:dol} presents the distributed online prediction protocol by dynamic model synchronization on both the predictor nodes and the coordinator. We refer to the PMC's transition matrix $\boldsymbol{\Pi}_i$ on predictor node $n_i$ by $f_i$. That is, when a predictor $n_i:\ i \in[k]$ observes an event $e_j$ it revises its internal model state (i.e., $f_i$) and provides a prediction report. Then it checks the local conditions  (batch size $b$ and local model divergence from a reference model $f_r$) to decide whether there is a need to synchronize its local model with the coordinator [or not].  $f_r$ is maintained in the predictor node as a copy of the last computed aggregated model $\hat{f}$ from the previous full synchronization step, which is shared between all local predictors/learners. By monitoring the local condition $\|f_i - f_r\|^2 > \Delta$ on all local predictors, we have a guarantee that if none of the local conditions is violated, the divergence (i.e., variance of local models $\delta(f)=\frac{1}{k} \sum_{j=1}^{k}\|f_i - \hat{f}\|^2$) does not exceed the threshold $\Delta$ \cite{kamp2014communication}. 
 
 \par On the other hand, the coordinator receives the prediction models from the predictor nodes that requested for model synchronization (violation), then tries to keep incrementally querying other nodes for their local prediction models until reaching out all nodes, or the variance of the aggregated model computed from the already received models less or equal than the divergence threshold  $\Delta$. Finally, an aggregated model $\hat{f}$ is computed and sent back to the predictor nodes that sent their models after violation or have been queried by the coordinator.
 
 \begin{algorithm}[h]
 	\caption{Communication-efficient Distributed Online Learning Protocol } 
 	\begin{algorithmic}[1] 
-		\Statex  \Indm  \textbf{Predictor} node $n_i$: at observing event $e_j$
-		\Statex \Indp update the prediction model parameters $f_i$ and provide a prediction service 
+		\Statex \Indm  \textbf{Predictor} node $n_i$: at observing event $e_j$
+		\Statex \Indp update the prediction model parameters $f_i$ and provide a prediction service \; 
 
 		\Statex \If {$j\mod b = 0\ and\ \|f_i - f_r\|^2 > \Delta$}  
-		\Statex send  $f_i$ to the Coordinator (violation) 
+		\Statex send  $f_i$ to the Coordinator (violation) \;
 		\Statex \Indm \textbf{Coordinator}:
-		\Statex \Indp receive local models with violation
-		 $B=\{f_i\}_{i=1}^m$
+		\Statex \Indp receive local models with violation 
+		 $B=\{f_i\}_{i=1}^m$ \;
 	
 	
 		\Statex \While{$|B| \neq k $ and $\frac{1}{|B|} \ \sum_{f_i\in  \Pi}\|f_i - \hat{f}\|^2 > \Delta$}{
 			
-			 \Statex  add other nodes have not reported violation for their models $ B \gets \{f_l : f_l \notin B\ and\ l \in [k]\}$   
-			\Statex  receive models from nodes add to $B$
+			 \Statex  \hspace{\algorithmicindent} add other nodes have not reported violation for \Statex \hspace{\algorithmicindent} their models $ B \gets \{f_l : f_l \notin B\ and\ l \in [k]\}$    \;
+			\Statex  \hspace{\algorithmicindent} receive models from nodes add to $B$\;
 	}
         \Statex
-		\Statex compute a new global model $\hat{f}$ 
-		\Statex send $\hat{f}$ to all the predictor nodes in $B$ and set $f_{1}\dots, f_{m}=\hat{f} $ 
+		\Statex compute a new global model $\hat{f}$ \;
+		\Statex send $\hat{f}$ to all the predictors in $B$ and set $f_{1}\dots f_{m}=\hat{f} $\; 
 		\Statex \If {$|B| = k$}{
-		\Statex set a new reference model $f_r	\gets \hat{f}$ }
+		\Statex  \hspace{\algorithmicindent} set a new reference model $f_r	\gets \hat{f}$ \; }
+	
 	\end{algorithmic}
 	\label{algonline:dol}
 \end{algorithm}
