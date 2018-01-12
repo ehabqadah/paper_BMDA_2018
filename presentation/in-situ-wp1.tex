@@ -1,0 +1,66 @@
+\documentclass{beamer}
+
+%\usepackage{beamerthemesplit} // Activate for custom appearance
+%\usepackage\{beamercolorthemedove}
+%\setbeamertemplate{footline}[textline]{
+%\includegraphics[width=\paperwidth]{figures/datacron_logo.png}}
+%}
+
+\usepackage{textpos}
+\usepackage{graphicx}
+\usepackage{datetime}
+\usepackage{tikz}
+\usepackage[export]{adjustbox}
+\usepackage{natbib}
+
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+%json%
+\usepackage{minted}
+%sudo apt-get install python-pygments
+\usecolortheme{dove}
+
+\def\datacronlogo{%
+	\resizebox{!}{2.5ex}{\includegraphics{figures/datacron_logo.png}%
+	}
+}
+\def\eclogo{
+	\resizebox{!}{2.5ex}{\includegraphics{figures/ec_logo.png}%
+	}
+}
+\def\horizonlogo{%
+	\resizebox{!}{2.5ex}{\includegraphics{figures/horizon_logo.png}%
+	}
+}
+
+%\includegraphics[width=\paperwidth]{figures/datacron_logo.png}}
+
+\title{In-situ (LED Component) - WP1}
+\author[shortname]{Michael Mock \inst{*} \and Ehab Qadah  \inst{*}}
+\institute[shortinst]{\inst{*} Fraunhofer IAIS, Germany \and %
+}
+\date{\today}
+
+\defbeamertemplate*{footline}{example theme}
+{%
+	\begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex,%
+		leftskip=.3cm,rightskip=.3cm plus1fil]{separation line}
+		\usebeamerfont{section in head/foot}%
+		\datacronlogo\hfill\insertshorttitle\hfill\dmyydate \today\hfill \thepage \hfill \horizonlogo
+	\end{beamercolorbox}
+}
+\begin{document}
+	
+	\frame{\titlepage}
+
+	
+	\begin{frame}<beamer>
+		\frametitle{Outline}
+		\tableofcontents
+	\end{frame}
+	
+
+	\input{in-situ}
+
+\end{document}
