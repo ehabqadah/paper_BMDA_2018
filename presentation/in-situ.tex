@@ -30,12 +30,10 @@
 	\frametitle{In-situ LED}
 	\framesubtitle{Functionalities}
 	\begin{itemize}[]
-	\item-Trajectory enrichment: computing trajectory statistics In-Situ
-	\item	-e.g., min/max/mean/var speed, acceleration
-	\item	-Deriving events against context information
-    \item		-Monitoring of ADS-B messages against sector information
-	\item	-Derivation of high-level events for sector entering and leaving
-	\item	-High-level events will be provided as real-time stream for applications
+	\item Trajectory enrichment: computing trajectory statistics  such as min/max/mean/var speed.
+    \item Monitoring of AIS messages against areas information (detected areas)
+	\item Derivation of low-level events for area entering and leaving
+
 		
 	\end{itemize}
 }
@@ -45,16 +43,13 @@
 	\frametitle{Real-time stream simulator}
 	
 	\begin{itemize}[]
-		\item<1->Given a set of $k$ real-time streams of events $S = \{ s_1,s_2, ..., s_k\}$.
+		\item<1-> Read raw AIS File to  generate a reply stream
 		
-		\item<1 -> Each stream $s_i=\langle e_1,e_3...,e_t,...\rangle$  is an evolving time-ordered sequence of events.
+		\item<1 -> Reconstruct the trajectories and use the actual time difference between the points to replay origin stream
 		
-		\item<1 -> Each event is defined as a tuple of attributes $e_t = (type,\tau,id,a_1,a_2.....,a_n)$ where $type\ \in  \Sigma$ (i.e., event types). 
-		\item<1-> A user-defined pattern (i.e., complex event of interest) $P$ expressed as sequence of event types.
+		\item<1 -> $delayScale$ parameter to scale up/down the out stream rate
 		
-		%  \item<1->Goal:  provides online prediction about when the event pattern $P$ is expected to be completed each single stream $s_i$ 
-		
-		\item<1->Goal: the main objective is to predict the pattern $P$ completion with certain probability in the future over each stream $s_i$ given the current time event $e_t$. 
+	
 	\end{itemize}
 }
 
@@ -73,13 +68,26 @@
 }
 
 
+
 \section{Deployment and Integration }
-\frame
-{	
-	\frametitle{Deployment}
-	\framesubtitle{}
-migration from VM version to true cluster (including cluster details 10 nodes, 8 cores each)
-}
+
+\begin{frame}
+\frametitle{Deployment}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+  \begin{itemize}
+  \item<1-> From deployment on a single VM machine 
+  \end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}  
+  \begin{itemize}
+  \item<1-> To deployment on the YARN datAcron cluster ($10\ nodes\ X\ 8\ cores$)
+  \end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+
 
 
 
@@ -108,7 +116,7 @@ migration from VM version to true cluster (including cluster details 10 nodes, 8
 
 \section{Conclusion}
 \frame
-{	
-	LED in-situ processing ressource/CPU consumption and delay
+{	\frametitle{Conclusion}
+	LED in-situ processing resources/CPU consumption and delay
 	can be neglected
 }

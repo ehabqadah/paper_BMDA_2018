@@ -64,6 +64,13 @@
 	\frametitle{Empirical evaluation }
 	\framesubtitle{Precision scores with respect to the number of input events over time for $\mathcal{P}_1$}
 	
+	\begin{itemize}
+		\item<1-> All methods of distributed learning outperform the isolated prediction model
+		
+		\item<1->  The hypothetical method of full continuous synchronization has the highest precision rates.
+		\item<1-> The static and dynamic synchronization schemes have close precision scores
+		
+	\end{itemize}
 	
 \end{frame}
 
@@ -87,7 +94,12 @@
 	\frametitle{Empirical evaluation }
 	\framesubtitle{Average spread value for $\mathcal{P}_1$}
 	
-
+\begin{itemize}
+	\item<1-> The spread is higher for the distributed learning based methods comparing to the isolated approach
+	
+	\item<1-> The average spread is decreasing over time until convergence,which may explains the drop in the precision scores from the beginning until reaching the convergence.
+	
+\end{itemize}
 	
 \end{frame}
 
@@ -111,8 +123,12 @@
 	\frametitle{Empirical evaluation }
 	\framesubtitle{Commutative communication with respect to the number of input events over time for $\mathcal{P}_1$}
 	
+	\begin{itemize}
+		\item<1-> A larger amount of communication is required for the continuous synchronization comparing to the static and dynamic approaches
+		
+		\item<1-> We can reduce the communication overhead by applying the dynamic synchronization protocol (a reduction by a factor of 100) comparing to the static synchronization scheme
 	
-	
+\end{itemize}
 \end{frame}
 
 
@@ -134,6 +150,29 @@
 	\frametitle{Empirical evaluation }
 	\framesubtitle{Precision scores of $\mathcal{P}_2$  for \textit{PLEASURE CRAFT} vessels}
 	
+	\begin{itemize}
+	\item<1-> For the second, more complex pattern ($\mathcal{P}_2$), we have found that the precision was worse for a distributed model generated over all vessels than in the model created for each vessel in isolation
+	
+\item<1-> 	So we only enabled the synchronization of the prediction models associated with vessels that belong to the same vessel class e.g., \textit{PLEASURE CRAFT}
+	
+\end{itemize}
+	
+\end{frame}
 
+\begin{frame}
+	
+	\frametitle{ Next steps }
+	
+	
+	\begin{itemize}
+		\item<1->  Interface definition with Elias for independent updates 
+		
+		\item<1-> Evaluation on synthetic data 
+		
+		\item<1->  Analysis of distributed learning  effects
+		\item<1-> Performance measurements on datAcron cluster 
+	    \item<1-> Prediction intervals with time information
+	
+	\end{itemize}
 	
 \end{frame}
