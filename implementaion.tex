@@ -2,7 +2,9 @@
 
 \section{IMPLEMENTATION DETAILS}
 \label{sec:impl}
-In this section, we describe in detail the implementation of our system. It has been implemented on top of Apache Flink and Apache Kafka frameworks. Each of the three sub-modules, described in Section ~\ref{sec:architecture}, have been implemented as Flink operations over the input events stream. 
+In this section, we describe in detail the implementation of our system on top of Apache Flink and Apache Kafka frameworks. Each of the three sub-modules, described in Section ~\ref{sec:architecture}, have been implemented as Flink operations over the Kafka events stream. 
+
+%Flink provides the distributed stream processing components of the distributed event pattern predictors. It works alongside Apache Kafka, which is used for streaming the input event streams and as a messaging platform to enable the distributed online learning functionalities.
 
 \textbf{Pre-processing and Prediction Operators.} Listing ~\ref{algonline:flink1} shows how the main workflow of the system is implemented as Flink data flow program.
 
