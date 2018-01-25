@@ -1,32 +1,15 @@
-\documentclass[sigconf,edbt]{acmart-edbt2018}
+\documentclass[sigconf,edbt]{acmart-edbt-workshops}
 
 \usepackage{booktabs} % For formal tables
 
 
-%algorthims
-%\usepackage{algorithmicx}
-
-%\def\NoNumber#1{{\def\alglinenumber##1{}\State #1}\addtocounter{ALG@line}{-1}}
-
-%\usepackage{verbatim} % for multiple line comment
-%\usepackage[final]{pdfpages} %include pdf files
-%\usepackage{amsmath}
-%\usepackage{amssymb}
-%\mathchardef\mhyphen="2D % Define a "math hyphen" 
-%\usepackage{amsthm}
-%\usepackage{eufrak}
-%\crefname{algocf}{Algorithm}{Algorithms}
 
 \usepackage[ruled,vlined,noend]{algorithm2e}
 \SetKwFor{While}{while}{do}{endw}
-%algorithm package
-%\linespread{1.1} % Definition of the linespread
-%\usepackage[tbtags]{mathtools}
 \DeclareMathOperator*{\somefunc}{somefunc}
 \SetKwInput{KwInput}{Input}
 \SetKwInput{KwOutput}{Output}
 \usepackage{algpseudocode}
-
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage[font=footnotesize]{subfig}
@@ -64,25 +47,23 @@
 	tabsize=3,
 	captionpos=b
 }
-
-
-% Copyright
-\setcopyright{rightsretained}
-
 \usepackage[inline,shortlabels]{enumitem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BEGIN Copyright for EDBT/ICDT Workshops
+% Please do not change the copyright instructions.
+\setcopyright{rightsretained}
 % DOI
 \acmDOI{}
-
 % ISBN
-\acmISBN{978-3-89318-078-3}
-
+\acmISBN{1613-0073}
 %Conference
-\acmConference[EDBT 2018]{21st International Conference on Extending Database Technology (EDBT)}{March 26-29, 2018}{Vienna, Austria} 
+\acmConference[EDBT/ICDT 2018 Workshops]{EDBT/ICDT 2018 Joint Conference}{March 26, 2018}{Vienna, Austria} 
 \acmYear{2018}
-
 \settopmatter{printacmref=false, printccs=false, printfolios=false}
-
-\pagestyle{plain} % removes running headers
+\pagestyle{empty} % removes running headers
+% END Copyright for EDBT/ICDT Workshops
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \begin{document}
@@ -144,7 +125,7 @@ In this paper, we present a distributed online prediction system for user-define
 
 \end{abstract}
 
-\keywords{Big Movement Event Streams, Stream Processing, Event Pattern Prediction, Distributed Pattern Markov Chain.}
+%\keywords{Big Movement Event Streams, Stream Processing, Event Pattern Prediction, Distributed Pattern Markov Chain.}
 
 \maketitle
 \input{bmda-body}
