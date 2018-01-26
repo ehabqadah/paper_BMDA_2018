@@ -87,7 +87,7 @@ or, in other words, of detecting a full match of the original regular expression
 since our aim is not to provide a single future point with the highest probability but an interval. 
 Predictions are given in the form of intervals, like $I=(\mathit{start},\mathit{end})$. 
 The meaning of such an interval is that the DFA is expected to reach a final state sometime in the future between $\mathit{start}$ and $\mathit{end}$ with probability at least some constant threshold $\theta_{fc}$ (provided by the user). 
-These intervals are estimated by a single-pass algorithm that scans a waiting-time distribution and finds the smallest (in terms of length) interval that exceeds this threshold. 
+These intervals are estimated by a single-pass algorithm that scans a waiting-time distribution and finds the smallest (in terms of length) interval that has probability exceeds this threshold ($\theta_{fc}$). 
 An example is shown in Figure \ref{fig:wtdfas},
 where the DFA in Figure \ref{fig:dfa1} is in state $1$,
 the \textit{waiting-time} distributions for all of its non-final states are shown in Figure \ref{fig:wt1}
@@ -112,7 +112,7 @@ The above described method assumes that we know the (possibly conditional) occur
 (as would be the case with synthetically generated streams).
 However, this is not always the case in real-world situations.
 Therefore, it is crucial for a system implementing this method to have the capability to learn the values of the PMC's transition matrix.
-One way to do this is to use some part of the stream to obtain the maximum-likelihood estimators for the transition probabilities. 
+One way to do this is to use some part of the stream to obtain the maximum-likelihood estimators for the transition probabilities \cite{anderson1957statistical}. 
 If $\boldsymbol{\Pi}$ is the transition matrix of a Markov chain with a set of states $Q$, 
 $\pi_{i,j}$ the transition probability from state $i$ to state $j$,
 $n_{i,j}$ the number of observed transitions from state $i$ to state $j$,
@@ -188,12 +188,19 @@ Each node $n_i$ handles a single event stream $s_i$ associated with a moving obj
 \hat{\pi}_{i,j}=\frac{\sum_{k \in K} n_{k,i,j}}{\sum_{k \in K} \sum_{l \in L} n_{k,i,l}}
 \end{equation*}
 
+
 \par Moreover, we measure the divergence of local models from the reference model  $\|f_k - f_r\|^2$ by calculating the sum of square difference between the transition probabilities  $\boldsymbol{\Pi}_i$ and  $\boldsymbol{\Pi}_r$:
 \begin{equation*}
 \label{eq:dis_pi_varinace}
 \|f_k - f_r\|^2=\sum_{i,j} (\hat{\pi}_k{i,j} -\hat{\pi}_r{i,j})^2
 \end{equation*}
-\par In general, our approach relies on enabling the collaborative learning between the prediction models of  the input event streams. By doing so, we assume that the underlying event streams belong to the same  distribution and share the same behavior (e.g., mobility patterns). We claim this assumption is reasonable in many application domains: for instance, in the context of maritime surveillance, vessels travel through standard routes, defined by the International Maritime Organization (IMO). Additionally, vessels have similar mobility patterns in specific areas such as moving with low speed and multiple turns near the ports \cite{pallotta2013vessel,liu2014knowledge}. That allows our system to construct a coherent global prediction model dynamically for all input event streams based on merging their local prediction models.
+
+  
+
+\par In general, our approach relies on enabling the collaborative learning among the distributed predictors. Each predictor node receives a stream of events related to a distinct moving object, and the central coordinator is responsible of synchronizing their prediction models using the \textit{synchronization operation}. Moreover, the predictors they only need to share the parameters of their models.  
+
+
+\par We assume that the underlying event streams belong to the same distribution and share the same behavior (e.g., mobility patterns). We claim this assumption is reasonable in many application domains: for instance, in the context of maritime surveillance, vessels travel through standard routes, defined by the International Maritime Organization (IMO). Additionally, vessels have similar mobility patterns in specific areas such as moving with low speed and multiple turns near the ports \cite{pallotta2013vessel,liu2014knowledge}. That allows our system to construct a coherent global prediction model dynamically for all input event streams based on merging their local prediction models.
 
 % may add it to conclusion 
 %\par By enabling collaborative learning our approach is imposing an acceleration of learning of the underlying prediction models with less training data, in addition, it provides an improvement of the predictive performance compared to the no-distributed  version of event forecasting with Pattern Markov Chains system. 
@@ -218,4 +225,4 @@ The system is composed of three processing units:   \begin{enumerate*}[(i)]
 	\item a coordinator node that communicates through Kafka stream channels with the predictors to realize the distributed online learning protocol. It builds a global prediction model, based on the received local models, and then shares it among the predictors.
 \end{enumerate*}
 
-\par Our distributed system consists of multiple pre-processing operators, prediction nodes, and a central coordinator node. All units run concurrently and are arranged as a  data processing pipeline, depicted in Figure ~\ref{fig:architecture}. We leverage Apache Kafka as a messaging platform to ingest the input event streams and to publish the resulting streams. Also, it is used as the communication channel between the predictor nodes and the coordinator. Apache Flink is employed to execute the system's distributed processing units over the input event streams: the pre-processing operators,  the prediction units, and the coordinator node. Our system architecture can be modeled as a logical network of processing nodes, organized in the form of a DAG, inspired by the Flink runtime dataflow programs \cite{carbone2015apache}.  
+\par Our distributed system consists of multiple pre-processing operators, prediction nodes, and a central coordinator node. These units run concurrently and are arranged as a data processing pipeline, depicted in Figure ~\ref{fig:architecture}. We leverage Apache Kafka as a messaging platform to ingest the input event streams and to publish the resulting streams. Also, it is used as the communication channel between the predictor nodes and the coordinator. Apache Flink is employed to execute the system's distributed processing units over the input event streams: the pre-processing operators,  the prediction units, and the coordinator node. Our system architecture can be modeled as a logical network of processing nodes, organized in the form of a DAG, inspired by the Flink runtime dataflow programs \cite{carbone2015apache}.  
