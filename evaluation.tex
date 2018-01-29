@@ -2,7 +2,7 @@
 \label{sec:results}
 In this section, we evaluate our proposed system by analyzing the predictive performance and communication complexity  using real-world event streams provided by the datAcron project in the context of maritime monitoring. The used event streams describe critical points (i.e., synopses) of moving vessels trajectories, which are derived from raw AIS messages as described in \cite{synopses1}. In particular, for our evaluation experiments we used a data set of synopses that contains $4,684,444$ critical points of $5055$ vessels sailing in the Atlantic Ocean during the period from 1 October 2015 to 31 March 2016.
 
-\par We used the synopses data set to generate a simulated stream of event tuples  i.e., \textit{(id, timestamp, longitude, latitude, annotation, speed, heading)}, which are processed by the system to attach an extra attribute \textit{type} that represents the event value,  where $type$ $\in \Sigma$,  and $ \Sigma= \Sigma_1=$$\{$\textit{VerySlow, Slow, Moving,  Sailing, Stopping}$\}$ , which is based on a discretization of the speed values. That is, $\Sigma_1$ includes a simple derived event types based on the speed value that can be used over streams of  raw AIS  or critical points. Or $\Sigma=\Sigma_2=$ $\{$\textit{stopStart, stopEnd, changeInSpeedStart, changeInSpeedEnd,  slowMotionStart, slowMotionEnd, gapStart, gapEnd, changeInHeading}$\}$, which is derived based on the values of the $annotation$ attribute that encodes the extracted trajectory movement events \cite{synopses1}. $\Sigma_2$ represents the set of possible mobility changes in the vessel's trajectory \cite{synopses1}, each critical point at least one event, and in the case of multiple values we generate duplicate points each of which corresponding to one event in the same order of $\Sigma_2$.
+\par We used the synopses data set to generate a simulated stream of event tuples  i.e., \textit{(id, timestamp, longitude, latitude, annotation, speed, heading)}, which are processed by the system to attach an extra attribute \textit{type} that represents the event value,  where $type$ $\in \Sigma$,  and $ \Sigma= \Sigma_1=$$\{$\textit{VerySlow, Slow, Moving,  Sailing, Stopping}$\}$, which is based on a discretization of the speed values. That is, $\Sigma_1$ includes a simple derived event types based on the speed value that can be used over streams of  raw AIS  or critical points. Or $\Sigma=\Sigma_2=$ $\{$\textit{stopStart, stopEnd, changeInSpeedStart, changeInSpeedEnd,  slowMotionStart, slowMotionEnd, gapStart, gapEnd, changeInHeading}$\}$, which is derived based on the values of the $annotation$ attribute that encodes the extracted trajectory movement events \cite{synopses1}. $\Sigma_2$ represents the set of possible mobility changes in the vessel's trajectory \cite{synopses1}, each critical point has at least one event. Where in the case of multiple values we generate duplicate points each of which corresponding to one event in the same order of $\Sigma_2$.
 
 \par In our experiments, we monitor a pattern $\mathcal{P}_1=Sailing$ with $\Sigma_1$ that detects when the vessel is underway (sailing). Likewise, we test a second pattern  $\mathcal{P}_2=$\textit{changeInHeading; gapStart; gapEnd; changeInHeading} with $\Sigma_2$ that describes a potential illegal fishing activity \cite{alevizos2017event}. 
 
@@ -28,7 +28,7 @@ In this section, we evaluate our proposed system by analyzing the predictive per
 
 \begin{figure}[h]
 	
-	\includegraphics[width=.5\textwidth]{figures/precision_p1.png}
+	\includegraphics[width=.5\textwidth,height=.3\textheight]{figures/precision_p1.png}
 	
 	\caption{Precision scores with respect to the number of input events over time for $\mathcal{P}_1$.}
 	\label{fig:precsions}
@@ -44,7 +44,7 @@ In this section, we evaluate our proposed system by analyzing the predictive per
 	
 	\begin{figure}[h]
 		
-		\includegraphics[width=.5\textwidth]{figures/messages_p1.png}
+		\includegraphics[width=.5\textwidth,height=.3\textheight]{figures/messages_p1.png}
 		
 		\caption{Cumulative communication with respect to the number of input events over time for $\mathcal{P}_1$.}
 		\label{fig:comm}
@@ -58,7 +58,7 @@ In this section, we evaluate our proposed system by analyzing the predictive per
 	
 	\begin{figure}[ht]
 		
-		\includegraphics[width=.5\textwidth]{figures/spread_p1.png}
+		\includegraphics[width=.5\textwidth,height=.3\textheight]{figures/spread_p1.png}
 		
 		\caption{Average spread value for $\mathcal{P}_1$.}
 		\label{fig:spread}
@@ -124,6 +124,7 @@ In this section, we evaluate our proposed system by analyzing the predictive per
 %		\bottomrule
 %	\end{tabular}
 %\end{table}
+
 
 
  
